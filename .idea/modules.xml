@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/security-assert.iml" filepath="$PROJECT_DIR$/.idea/security-assert.iml" />
+      <module fileurl="file://$PROJECT_DIR$/security-assert-plugin/security-assert-plugin.iml" filepath="$PROJECT_DIR$/security-assert-plugin/security-assert-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/security-assert-service/security-assert-service.iml" filepath="$PROJECT_DIR$/security-assert-service/security-assert-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/security-assert-service/security-assert-service-api/security-assert-service-api.iml" filepath="$PROJECT_DIR$/security-assert-service/security-assert-service-api/security-assert-service-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/security-assert-service/security-assert-service-component/security-assert-service-component.iml" filepath="$PROJECT_DIR$/security-assert-service/security-assert-service-component/security-assert-service-component.iml" />
+      <module fileurl="file://$PROJECT_DIR$/security-assert-service/security-assert-service-runner/security-assert-service-runner.iml" filepath="$PROJECT_DIR$/security-assert-service/security-assert-service-runner/security-assert-service-runner.iml" />
+    </modules>
+  </component>
+</project>
