@@ -16,7 +16,7 @@
       <module name="security-assert-plugin" target="1.8" />
       <module name="security-assert-service" target="1.5" />
       <module name="security-assert-service-api" target="1.5" />
-      <module name="security-assert-service-component" target="1.5" />
+      <module name="security-assert-service-component" target="6" />
       <module name="security-assert-service-runner" target="1.5" />
       <module name="service" target="1.5" />
     </bytecodeTargetLevel>
