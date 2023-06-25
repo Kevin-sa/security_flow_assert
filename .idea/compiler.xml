@@ -7,16 +7,16 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="security-assert-service-runner" />
-        <module name="security-assert-plugin" />
         <module name="security-assert-service-component" />
         <module name="security-assert-service-api" />
+        <module name="security-assert-plugin" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="security-assert-plugin" target="1.8" />
       <module name="security-assert-service" target="1.5" />
       <module name="security-assert-service-api" target="1.5" />
-      <module name="security-assert-service-component" target="1.8" />
+      <module name="security-assert-service-component" target="8" />
       <module name="security-assert-service-runner" target="1.5" />
       <module name="service" target="1.5" />
     </bytecodeTargetLevel>

@@ -4,6 +4,8 @@ public class ProcessContext<T> {
 
     private boolean filterResult;
 
+    private String filterMsg;
+
     private T data;
 
     private String exceptMsg;
@@ -30,5 +32,13 @@ public class ProcessContext<T> {
 
     public String getExceptMsg() {
         return exceptMsg;
+    }
+
+    public void setFilterMsg(String filterMsg) {
+        this.filterMsg = filterMsg;
+    }
+
+    public String getFilterMsg() {
+        return filterMsg;
     }
 }

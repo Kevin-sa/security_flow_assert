@@ -6,11 +6,11 @@ public abstract class FilterActionUnitTemplate<T> implements FilterActionUnit<T>
     public ProcessContext<T> execute(ProcessContext<T> processContext) {
         try {
             paramCheck(processContext);
+            blackListCheck(processContext);
+
             contextTypeCheck(processContext);
             if (!processContext.isFilterResult()) return processContext;
             statusCode(processContext);
-            if (!processContext.isFilterResult()) return processContext;
-            apiPathCheck(processContext);
             if (!processContext.isFilterResult()) return processContext;
             headersCheck(processContext);
             if (!processContext.isFilterResult()) return processContext;
@@ -23,9 +23,9 @@ public abstract class FilterActionUnitTemplate<T> implements FilterActionUnit<T>
 
     protected abstract void paramCheck(ProcessContext<T> processContext) throws Exception;
 
-    protected abstract void contextTypeCheck(ProcessContext<T> processContext);
+    protected abstract void blackListCheck(ProcessContext<T> processContext) throws Exception;
 
-    protected abstract void apiPathCheck(ProcessContext<T> processContext);
+    protected abstract void contextTypeCheck(ProcessContext<T> processContext);
 
     protected abstract void headersCheck(ProcessContext<T> processContext);
 

@@ -1,7 +1,7 @@
 package com.kevinsa.security.service.service.collect.action.response;
 
-import java.util.regex.Pattern;
 
+import com.kevinsa.security.service.dto.ResponseInfoDTO;
 import org.springframework.stereotype.Component;
 
 import com.kevinsa.security.service.service.collect.base.FilterActionUnitTemplate;
@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class RespDefaultFilterAction<ResponseInfoDTO> extends FilterActionUnitTemplate<ResponseInfoDTO> {
+public class RespDefaultFilterAction<T> extends FilterActionUnitTemplate<T> {
     @Override
     public String getPattern() {
         return "(.)*\\.kwaixiaodian\\.com";
@@ -28,27 +28,34 @@ public class RespDefaultFilterAction<ResponseInfoDTO> extends FilterActionUnitTe
     }
 
     @Override
-    protected void paramCheck(ProcessContext<ResponseInfoDTO> processContext) throws Exception {
+    protected void paramCheck(ProcessContext<T> processContext) throws Exception {
+        if (processContext == null || processContext.getData() == null) {
+            throw new Exception("processContext is null");
+        }
+    }
+
+    @Override
+    protected void blackListCheck(ProcessContext<T> processContext) throws Exception {
 
     }
 
     @Override
-    protected void contextTypeCheck(ProcessContext<ResponseInfoDTO> processContext) {
+    protected void contextTypeCheck(ProcessContext<T> processContext) {
+
+    }
+
+
+    @Override
+    protected void headersCheck(ProcessContext<T> processContext) {
 
     }
 
     @Override
-    protected void apiPathCheck(ProcessContext<ResponseInfoDTO> processContext) {
-
-    }
-
-    @Override
-    protected void headersCheck(ProcessContext<ResponseInfoDTO> processContext) {
-
-    }
-
-    @Override
-    protected void statusCode(ProcessContext<ResponseInfoDTO> processContext) {
-
+    protected void statusCode(ProcessContext<T> processContext) {
+        ResponseInfoDTO responseInfoDTO = ((ResponseInfoDTO) processContext.getData());
+        if (responseInfoDTO.getStatusCode() != 200) {
+            processContext.setFilterResult(false);
+            processContext.setFilterMsg(this.getClass().getName() + " statusCode check error");
+        }
     }
 }
