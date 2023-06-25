@@ -1,10 +1,13 @@
 package main.java.com.kevinsa.assertlog.action;
 
+import burp.IExtensionHelpers;
+import burp.IHttpRequestResponse;
 import burp.IRequestInfo;
 import main.java.com.kevinsa.assertlog.dto.RequestInfoDTO;
 import main.java.com.kevinsa.assertlog.utils.HttpClientUtils;
 import main.java.com.kevinsa.assertlog.utils.ObjectMapperUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,21 +16,22 @@ public class RequestTransferAction {
 
     private final HttpClientUtils httpClientUtils = new HttpClientUtils();
 
-//                String request = new String(iHttpRequestResponse.getRequest());
-//                stdout.println("request url" + iRequestInfo.getUrl());
-
-    public void executor(IRequestInfo iRequestInfo, String uuid) {
-        RequestInfoDTO requestInfoDTO = transfer(iRequestInfo);
+    public void executor(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, String uuid) {
+        IRequestInfo iRequestInfo = helpers.analyzeRequest(iHttpRequestResponse.getRequest());
+        if (iRequestInfo.getContentType() != IRequestInfo.CONTENT_TYPE_JSON && iRequestInfo.getContentType() != IRequestInfo.CONTENT_TYPE_NONE)
+            return;
+        RequestInfoDTO requestInfoDTO = transfer(iHttpRequestResponse, helpers, iRequestInfo);
         requestInfoDTO.setUuid(uuid);
-        httpClientUtils.doPost("http://127.0.0.1:8088", ObjectMapperUtils.toJSON(requestInfoDTO));
+//        httpClientUtils.doPost("http://127.0.0.1:8088/plugin/burpsuite/request", ObjectMapperUtils.toJSON(requestInfoDTO));
     }
 
-    private RequestInfoDTO transfer(IRequestInfo iRequestInfo) {
+    private RequestInfoDTO transfer(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IRequestInfo iRequestInfo) {
         return RequestInfoDTO.builder()
                 .host(iRequestInfo.getHeaders().get(1))
                 .path(getApiPath(iRequestInfo.getHeaders().get(0)))
                 .method(iRequestInfo.getMethod())
                 .headers(headerParser(iRequestInfo.getHeaders()))
+                .payload(getReqPayload(iHttpRequestResponse, helpers, iRequestInfo))
                 .build();
     }
 
@@ -43,9 +47,12 @@ public class RequestTransferAction {
         return headers;
     }
 
-
-    private List<String> getHeaders(IRequestInfo iRequestInfo) {
-        return iRequestInfo.getHeaders();
+    private String getReqPayload(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IRequestInfo iRequestInfo) {
+        byte[] requestBytes = iHttpRequestResponse.getRequest();
+        byte[] requestBody = new byte[requestBytes.length - iRequestInfo.getBodyOffset()];
+        System.arraycopy(requestBytes, iRequestInfo.getBodyOffset(), requestBody, 0, requestBody.length);
+//        return helpers.bytesToString(requestBody);
+        return new String(requestBody, StandardCharsets.UTF_8);
     }
 
 

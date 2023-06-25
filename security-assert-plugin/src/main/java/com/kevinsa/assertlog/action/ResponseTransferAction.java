@@ -1,30 +1,40 @@
 package main.java.com.kevinsa.assertlog.action;
 
+import java.nio.charset.StandardCharsets;
+
+import burp.IExtensionHelpers;
+import burp.IHttpRequestResponse;
 import burp.IResponseInfo;
 import main.java.com.kevinsa.assertlog.dto.ResponseInfoDTO;
+import main.java.com.kevinsa.assertlog.utils.HttpClientUtils;
+import main.java.com.kevinsa.assertlog.utils.ObjectMapperUtils;
 
 public class ResponseTransferAction {
 
-    public void executor(IResponseInfo iResponseInfo, String uuid) {
+    private final HttpClientUtils httpClientUtils = new HttpClientUtils();
 
+    public void executor(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, String uuid) {
+        IResponseInfo iResponseInfo = helpers.analyzeResponse(iHttpRequestResponse.getResponse());
+        if (!iResponseInfo.getStatedMimeType().equals("JSON")) return;
+        ResponseInfoDTO responseInfoDTO = transfer(iHttpRequestResponse, helpers, iResponseInfo);
+        responseInfoDTO.setUuid(uuid);
+//        httpClientUtils.doPost("http://127.0.0.1:8088/plugin/burpsuite/response", ObjectMapperUtils.toJSON(responseInfoDTO));
     }
 
-    public ResponseInfoDTO transfer() {
-        //                String response = new String(iHttpRequestResponse.getResponse());
-//        stdout.println("response status" + iResponseInfo.getStatusCode());
+    public ResponseInfoDTO transfer(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IResponseInfo iResponseInfo) {
+        return ResponseInfoDTO.builder()
+                .statusCode(iResponseInfo.getStatusCode())
+                .body(getBody(iHttpRequestResponse, helpers, iResponseInfo))
+                .headers(iResponseInfo.getHeaders())
+                .statusCode(iResponseInfo.getStatusCode())
+                .statedMimeType(iResponseInfo.getStatedMimeType())
+                .build();
+    }
 
-//                byte[] responseBody = iHttpRequestResponse.getResponse();
-//                int bodyOffset = iResponseInfo.getBodyOffset();
-//
-//                // 获取响应消息体
-//                byte[] responseBody = new byte[iHttpRequestResponse.getResponse().length - bodyOffset];
-//                System.arraycopy(iHttpRequestResponse.getResponse(), bodyOffset, responseBody, 0, responseBody.length);
-//
-//                // 将消息体转换为字符串
-//                String responseBodyString = helpers.bytesToString(responseBody);
-//
-//                // 处理响应消息体
-//                System.out.println("Response Body: " + responseBodyString);
-        return ResponseInfoDTO.builder().build();
+    private String getBody(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IResponseInfo iResponseInfo) {
+        byte[] responseBytes = iHttpRequestResponse.getResponse();
+        byte[] responseBody = new byte[responseBytes.length - iResponseInfo.getBodyOffset()];
+        System.arraycopy(responseBytes, iResponseInfo.getBodyOffset(), responseBody, 0, responseBody.length);
+        return new String(responseBytes, StandardCharsets.UTF_8);
     }
 }

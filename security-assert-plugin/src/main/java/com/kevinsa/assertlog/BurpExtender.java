@@ -3,23 +3,22 @@ package main.java.com.kevinsa.assertlog;
 import burp.*;
 import main.java.com.kevinsa.assertlog.action.RequestTransferAction;
 import main.java.com.kevinsa.assertlog.action.ResponseTransferAction;
+import main.java.com.kevinsa.assertlog.action.UnloadAction;
 
-import java.io.PrintWriter;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 public class BurpExtender implements IBurpExtender, IProxyListener {
 
-    private IBurpExtenderCallbacks CALLBACKS;
     private final static String EXTENDER_NAME = "sec_assert_log";
-    private PrintWriter stdout;
-    private PrintWriter stderr;
     private static String BURPSUITE_TASK_UUID = "";
 
-    private ThreadPoolExecutor renderThreadPool;
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAX_POOL_SIZE = 20;
     private static final int KEEP_ALIVE = 60;
+
+    private ThreadPoolExecutor renderThreadPool;
+    private IBurpExtenderCallbacks callbacks;
 
     private final RequestTransferAction requestTransferAction = new RequestTransferAction();
     private final ResponseTransferAction responseTransferAction = new ResponseTransferAction();
@@ -28,14 +27,11 @@ public class BurpExtender implements IBurpExtender, IProxyListener {
     public void registerExtenderCallbacks(IBurpExtenderCallbacks iBurpExtenderCallbacks) {
         BURPSUITE_TASK_UUID = UUID.randomUUID().toString() + "_";
 
-        stdout = new PrintWriter(iBurpExtenderCallbacks.getStdout());
-        stderr = new PrintWriter(iBurpExtenderCallbacks.getStderr());
+        this.callbacks = iBurpExtenderCallbacks;
+        callbacks.setExtensionName(EXTENDER_NAME);
 
-        iBurpExtenderCallbacks.printOutput(EXTENDER_NAME);
-        this.CALLBACKS = iBurpExtenderCallbacks;
-        CALLBACKS.setExtensionName(EXTENDER_NAME);
-
-        CALLBACKS.registerProxyListener(BurpExtender.this);
+        callbacks.registerProxyListener(BurpExtender.this);
+        callbacks.registerExtensionStateListener(new UnloadHandler());
 
         renderThreadPool = new ThreadPoolExecutor(
                 CORE_POOL_SIZE,
@@ -53,22 +49,39 @@ public class BurpExtender implements IBurpExtender, IProxyListener {
      */
     @Override
     public void processProxyMessage(boolean b, IInterceptedProxyMessage iInterceptedProxyMessage) {
-        IExtensionHelpers helpers = CALLBACKS.getHelpers();
+        IExtensionHelpers helpers = callbacks.getHelpers();
         IHttpRequestResponse iHttpRequestResponse = iInterceptedProxyMessage.getMessageInfo();
         String uuid = BURPSUITE_TASK_UUID + iInterceptedProxyMessage.getMessageReference();
         if (b) {
             if (iHttpRequestResponse.getRequest() != null) {
-                IRequestInfo iRequestInfo = helpers.analyzeRequest(iHttpRequestResponse.getRequest());
-                renderThreadPool.execute(() -> requestTransferAction.executor(iRequestInfo, uuid));
+                renderThreadPool.execute(() -> {
+                    try {
+                        requestTransferAction.executor(iHttpRequestResponse, helpers, uuid);
+                    } catch (Exception e) {
+                        callbacks.printError("requestTransferAction error:" + e.getMessage());
+                    }
+                });
             }
         } else {
             if (iHttpRequestResponse.getResponse() != null) {
-                IResponseInfo iResponseInfo = helpers.analyzeResponse(iHttpRequestResponse.getResponse());
-                renderThreadPool.execute(() -> responseTransferAction.executor(iResponseInfo, uuid));
+                renderThreadPool.execute(() -> {
+                    try {
+                        responseTransferAction.executor(iHttpRequestResponse, helpers, uuid);
+                    } catch (Exception e) {
+                        callbacks.printError("responseTransferAction error:" + e.getMessage());
+                    }
+                });
             }
         }
     }
 
+
+    private static class UnloadHandler implements IExtensionStateListener {
+        public void extensionUnloaded() {
+            UnloadAction unloadAction = new UnloadAction();
+            unloadAction.executor(BURPSUITE_TASK_UUID);
+        }
+    }
 }
 
 

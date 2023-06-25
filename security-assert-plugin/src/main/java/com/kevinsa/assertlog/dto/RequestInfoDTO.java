@@ -13,4 +13,5 @@ public class RequestInfoDTO {
     private String path;
     private String method;
     Map<String, String> headers;
+    String payload;
 }

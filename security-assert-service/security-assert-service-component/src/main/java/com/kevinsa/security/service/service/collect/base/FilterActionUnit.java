@@ -7,10 +7,13 @@ import java.util.regex.Pattern;
 public interface FilterActionUnit<T> {
 
     @NotNull
-    Pattern getPattern();
+    String getPattern();
 
     @NotNull
     String getBizMsg();
+
+    @NotNull
+    boolean isEnable();
 
     ProcessContext<T> execute(ProcessContext<T> processContext);
 }
