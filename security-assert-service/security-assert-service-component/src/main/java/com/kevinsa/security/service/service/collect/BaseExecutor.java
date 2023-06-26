@@ -5,6 +5,7 @@ import com.kevinsa.security.service.dto.RequestInfoDTO;
 import com.kevinsa.security.service.dto.ResponseInfoDTO;
 import com.kevinsa.security.service.service.collect.base.FilterActionUnit;
 import com.kevinsa.security.service.service.collect.base.ProcessContext;
+import com.kevinsa.security.service.service.collect.impl.CollectDataDaoServiceImpl;
 
 import org.apache.logging.log4j.util.Strings;
 import org.reflections.Reflections;
@@ -45,6 +46,9 @@ public class BaseExecutor<T> {
 
     @Autowired
     private AutowireCapableBeanFactory autowireCapableBeanFactory;
+
+    @Autowired
+    private CollectDataDaoServiceImpl collectDataDaoService;
 
     static {
         Reflections requestReflections = new Reflections("com.kevinsa.security.service.service.collect.action.request");
@@ -120,6 +124,11 @@ public class BaseExecutor<T> {
                 }
                 if (pattern.matcher(host).matches()) {
                     ProcessContext<T> processContext = commonExecute((T) responseInfoDTO, regex, responseFilterActionUnitMap);
+                    if (processContext.isFilterResult()) {
+                        ProcessContext<T> reqContext = flowUuidData.get(responseInfoDTO.getUuid());
+                        collectDataDaoService.flowDataSave((RequestInfoDTO) reqContext.getData(), responseInfoDTO, processContext.getBizMsg());
+                        break;
+                    }
                 }
             }
         } catch (Exception e) {
@@ -149,6 +158,7 @@ public class BaseExecutor<T> {
         FilterActionUnit obj = clazz.getDeclaredConstructor().newInstance();
         autowireCapableBeanFactory.autowireBean(obj);
         obj.execute(processContext);
+        processContext.setBizMsg(obj.getBizMsg());
         return processContext;
     }
 }

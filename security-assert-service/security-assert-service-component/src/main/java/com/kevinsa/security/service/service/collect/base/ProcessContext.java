@@ -10,6 +10,8 @@ public class ProcessContext<T> {
 
     private String exceptMsg;
 
+    private String bizMsg;
+
     public void setFilterResult(boolean result) {
         this.filterResult = result;
     }
@@ -40,5 +42,13 @@ public class ProcessContext<T> {
 
     public String getFilterMsg() {
         return filterMsg;
+    }
+
+    public void setBizMsg(String bizMsg) {
+        this.bizMsg = bizMsg;
+    }
+
+    public String getBizMsg() {
+        return bizMsg;
     }
 }

@@ -21,5 +21,7 @@ public class FlowOriginDTO {
     private String responseJsonTree;
     private Integer status;
     private Integer dataSource;
+    private Integer version;
+    private String apiHash;
     private Long createTime;
 }
