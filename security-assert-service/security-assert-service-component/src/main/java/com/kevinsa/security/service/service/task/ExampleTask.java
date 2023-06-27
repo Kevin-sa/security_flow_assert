@@ -19,6 +19,5 @@ public class ExampleTask {
     public void executor() throws Exception {
         AssertProcessContext context = assertExecutorFactory.createDefaultContext();
         processFlow.process(context);
-
     }
 }

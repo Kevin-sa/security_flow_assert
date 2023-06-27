@@ -12,8 +12,8 @@ public class AssertProcessFlow {
     }
 
     public <T extends AssertProcessContext> void process(T context) throws Exception {
-        String bizMsg = context.getBizMsg();
-        ProcessTemplate processTemplate = templateConfig.get(bizMsg);
+        String bizId = context.getBizId();
+        ProcessTemplate processTemplate = templateConfig.get(bizId);
 
         if (processTemplate == null) {
             throw new Exception("processTemplate not exist");
