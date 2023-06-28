@@ -14,7 +14,7 @@ import com.kevinsa.security.service.dto.RequestInfoDTO;
 import com.kevinsa.security.service.dto.ResponseInfoDTO;
 import com.kevinsa.security.service.service.collect.CollectDataDaoService;
 import com.kevinsa.security.service.utils.HashUtils;
-import com.kevinsa.security.service.utils.JsonHierarchyParseExtractor;
+import com.kevinsa.security.service.utils.JsonHierarchyParseUtils;
 import com.kevinsa.security.service.utils.ObjectMapperUtils;
 
 @Lazy
@@ -22,7 +22,7 @@ import com.kevinsa.security.service.utils.ObjectMapperUtils;
 public class CollectDataDaoServiceImpl implements CollectDataDaoService {
 
     @Autowired
-    private JsonHierarchyParseExtractor jsonHierarchyParseExtractor;
+    private JsonHierarchyParseUtils jsonHierarchyParseUtils;
 
     @Resource
     private FlowCollectionMapper flowCollectionMapper;
@@ -32,8 +32,8 @@ public class CollectDataDaoServiceImpl implements CollectDataDaoService {
 
     @Override
     public void flowDataSave(RequestInfoDTO requestInfoDTO, ResponseInfoDTO responseInfoDTO, String business) {
-        List<String> respJsonTree = jsonHierarchyParseExtractor.getJsonKey(responseInfoDTO.getBody(), "", 1);
-        List<String> reqJsonTree = jsonHierarchyParseExtractor.getJsonKey(requestInfoDTO.getBody(), "", 1);
+        List<String> respJsonTree = jsonHierarchyParseUtils.getJsonKey(responseInfoDTO.getBody(), "", 1);
+        List<String> reqJsonTree = jsonHierarchyParseUtils.getJsonKey(requestInfoDTO.getBody(), "", 1);
         FlowOriginDTO flowOriginDTO = FlowOriginDTO.builder()
                 .business(business)
                 .apiHost(requestInfoDTO.getHost())

@@ -3,6 +3,9 @@ package com.kevinsa.security.service.service.assertCheck.base;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AssertProcessFlow {
 
     private Map<String, ProcessTemplate> templateConfig;

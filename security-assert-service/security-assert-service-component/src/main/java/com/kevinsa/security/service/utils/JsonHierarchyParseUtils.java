@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Component
-public class JsonHierarchyParseExtractor {
+public class JsonHierarchyParseUtils {
 
     public List<String> getJsonKey(String json, String parentKey, Integer childNodeLimit) {
         JsonNode jsonNode = ObjectMapperUtils.readTreeFromJson(json);

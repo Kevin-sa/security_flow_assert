@@ -13,11 +13,11 @@ public class ExampleTask {
     @Autowired
     private AssertExecutorFactory assertExecutorFactory;
 
-    @Resource
-    private AssertProcessFlow processFlow;
+//    @Resource
+//    private AssertProcessFlow processFlow;
 
     public void executor() throws Exception {
         AssertProcessContext context = assertExecutorFactory.createDefaultContext();
-        processFlow.process(context);
+//        processFlow.process(context);
     }
 }

@@ -10,13 +10,14 @@ import javax.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.google.common.collect.Lists;
 import com.kevinsa.security.service.service.assertCheck.action.example.LoginCheckAction;
 import com.kevinsa.security.service.service.assertCheck.base.AssertProcessFlow;
 import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 import com.kevinsa.security.service.service.assertCheck.base.ProcessTemplate;
 
 @Configuration
-public class DefaultConfig {
+public class DefaultFlowConfig {
 
     @Resource
     private AssertProcessFlow processFlow;
@@ -33,10 +34,8 @@ public class DefaultConfig {
     @Bean
     public ProcessTemplate defaultAssertExecutor() {
         ProcessTemplate template = new ProcessTemplate();
-        List<AssertStepAction> processConfig = new ArrayList<>();
-
+        List<AssertStepAction> processConfig = Lists.newArrayList();
         processConfig.add(loginCheckAction());
-
         template.setProcessConfig(processConfig);
         return template;
     }
