@@ -1,6 +1,7 @@
 package com.kevinsa.security.service.runner.task;
 
 
+import com.kevinsa.security.service.utils.ScheduledExecutorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,14 @@ public class ExampleAssertTask implements ScheduledBaseTask {
 
     private final AssertStepAction assertStepAction;
 
+    private final ScheduledExecutorUtils scheduledExecutorUtils;
+
     @Autowired
-    public ExampleAssertTask(AssertExecutorFactory assertExecutorFactory, AssertStepAction assertStepAction) {
+    public ExampleAssertTask(AssertExecutorFactory assertExecutorFactory, AssertStepAction assertStepAction,
+                             ScheduledExecutorUtils scheduledExecutorUtils) {
         this.assertExecutorFactory = assertExecutorFactory;
         this.assertStepAction = assertStepAction;
+        this.scheduledExecutorUtils = scheduledExecutorUtils;
     }
 
 
@@ -57,7 +62,7 @@ public class ExampleAssertTask implements ScheduledBaseTask {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        exec();
         System.out.println("example assert task");
+//        scheduledExecutorUtils.getInstance().scheduleAtFixedRate(exec(), 1000, 5000, TimeUnit.MILLISECONDS);
     }
 }

@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import burp.IResponseInfo;
+import main.java.com.kevinsa.assertlog.constant.PluginConfig;
 import main.java.com.kevinsa.assertlog.dto.ResponseInfoDTO;
 import main.java.com.kevinsa.assertlog.utils.HttpClientUtils;
 import main.java.com.kevinsa.assertlog.utils.ObjectMapperUtils;
@@ -18,7 +19,7 @@ public class ResponseTransferAction {
         if (!iResponseInfo.getStatedMimeType().equals("JSON")) return;
         ResponseInfoDTO responseInfoDTO = transfer(iHttpRequestResponse, helpers, iResponseInfo);
         responseInfoDTO.setUuid(uuid);
-//        httpClientUtils.doPost("http://127.0.0.1:8088/plugin/burpsuite/response", ObjectMapperUtils.toJSON(responseInfoDTO));
+        httpClientUtils.doPost(PluginConfig.SERVER_ADDRESS + PluginConfig.RESPONSE_PATH, ObjectMapperUtils.toJSON(responseInfoDTO));
     }
 
     public ResponseInfoDTO transfer(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IResponseInfo iResponseInfo) {

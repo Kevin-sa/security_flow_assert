@@ -3,6 +3,7 @@ package main.java.com.kevinsa.assertlog.action;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import burp.IRequestInfo;
+import main.java.com.kevinsa.assertlog.constant.PluginConfig;
 import main.java.com.kevinsa.assertlog.dto.RequestInfoDTO;
 import main.java.com.kevinsa.assertlog.utils.HttpClientUtils;
 import main.java.com.kevinsa.assertlog.utils.ObjectMapperUtils;
@@ -22,7 +23,7 @@ public class RequestTransferAction {
             return;
         RequestInfoDTO requestInfoDTO = transfer(iHttpRequestResponse, helpers, iRequestInfo);
         requestInfoDTO.setUuid(uuid);
-//        httpClientUtils.doPost("http://127.0.0.1:8088/plugin/burpsuite/request", ObjectMapperUtils.toJSON(requestInfoDTO));
+        httpClientUtils.doPost(PluginConfig.SERVER_ADDRESS + PluginConfig.REQUEST_PATH, ObjectMapperUtils.toJSON(requestInfoDTO));
     }
 
     private RequestInfoDTO transfer(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IRequestInfo iRequestInfo) {

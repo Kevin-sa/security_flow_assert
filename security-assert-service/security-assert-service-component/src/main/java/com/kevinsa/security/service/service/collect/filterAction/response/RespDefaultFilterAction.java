@@ -1,4 +1,4 @@
-package com.kevinsa.security.service.service.collect.action.response;
+package com.kevinsa.security.service.service.collect.filterAction.response;
 
 
 import com.kevinsa.security.service.dto.ResponseInfoDTO;

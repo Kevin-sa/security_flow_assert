@@ -1,10 +1,9 @@
-package com.kevinsa.security.service.service.assertCheck.action.example;
+package com.kevinsa.security.service.service.assertCheck.action.common;
 
 import com.kevinsa.security.service.service.assertCheck.base.AssertProcessContext;
 import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 
-public class LoginCheckAction implements AssertStepAction<AssertProcessContext> {
-
+public class JsonPathCheckAction implements AssertStepAction<AssertProcessContext> {
     @Override
     public void process(AssertProcessContext processContext) {
 

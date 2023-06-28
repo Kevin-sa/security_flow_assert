@@ -19,7 +19,7 @@ create table flow_origin_data
     UNIQUE KEY `uniq_hash` (api_hash)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='flow origin data from plugin';
 
-CREATE TABLE `assert_rule`
+CREATE TABLE `assert_json_path_rule`
 (
     `id`          bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
     `business`    varchar(255)                             NOT NULL DEFAULT '0' COMMENT 'business id',
@@ -30,4 +30,4 @@ CREATE TABLE `assert_rule`
     `create_time` varchar(300)                             NOT NULL DEFAULT '0' COMMENT '创建时间',
     `update_time` varchar(300)                             NOT NULL DEFAULT '0' COMMENT '更新时间',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='assert rule'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='assert json path rule'

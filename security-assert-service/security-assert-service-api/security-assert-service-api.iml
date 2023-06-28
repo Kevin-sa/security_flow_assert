@@ -25,6 +25,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.jayway.jsonpath:json-path:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:28.1-jre" level="project" />
+    <orderEntry type="library" name="Maven: org.checkerframework:checker-qual:2.8.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.errorprone:error_prone_annotations:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.mojo:animal-sniffer-annotations:1.18" level="project" />
     <orderEntry type="module" module-name="security-assert-service-component" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.27" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.27" level="project" />

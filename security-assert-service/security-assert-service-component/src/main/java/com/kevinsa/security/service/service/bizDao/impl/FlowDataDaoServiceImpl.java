@@ -1,4 +1,4 @@
-package com.kevinsa.security.service.service.collect.impl;
+package com.kevinsa.security.service.service.bizDao.impl;
 
 import java.util.List;
 
@@ -12,14 +12,14 @@ import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.dto.RequestInfoDTO;
 import com.kevinsa.security.service.dto.ResponseInfoDTO;
-import com.kevinsa.security.service.service.collect.CollectDataDaoService;
+import com.kevinsa.security.service.service.bizDao.FlowDataDaoService;
 import com.kevinsa.security.service.utils.HashUtils;
 import com.kevinsa.security.service.utils.JsonHierarchyParseUtils;
 import com.kevinsa.security.service.utils.ObjectMapperUtils;
 
 @Lazy
 @Service
-public class CollectDataDaoServiceImpl implements CollectDataDaoService {
+public class FlowDataDaoServiceImpl implements FlowDataDaoService {
 
     @Autowired
     private JsonHierarchyParseUtils jsonHierarchyParseUtils;

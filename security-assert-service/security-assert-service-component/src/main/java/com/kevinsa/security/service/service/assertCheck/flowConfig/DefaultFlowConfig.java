@@ -1,6 +1,5 @@
 package com.kevinsa.security.service.service.assertCheck.flowConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.google.common.collect.Lists;
-import com.kevinsa.security.service.service.assertCheck.action.example.LoginCheckAction;
+import com.kevinsa.security.service.service.assertCheck.action.example.AuthCheckAction;
 import com.kevinsa.security.service.service.assertCheck.base.AssertProcessFlow;
 import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 import com.kevinsa.security.service.service.assertCheck.base.ProcessTemplate;
@@ -35,12 +34,12 @@ public class DefaultFlowConfig {
     public ProcessTemplate defaultAssertExecutor() {
         ProcessTemplate template = new ProcessTemplate();
         List<AssertStepAction> processConfig = Lists.newArrayList();
-        processConfig.add(loginCheckAction());
+        processConfig.add(authCheckAction());
         template.setProcessConfig(processConfig);
         return template;
     }
 
     @Bean
-    LoginCheckAction loginCheckAction() {return new LoginCheckAction();}
+    AuthCheckAction authCheckAction() {return new AuthCheckAction();}
 
 }
