@@ -30,4 +30,11 @@ public class MapperTest {
                 .build();
         flowCollectionMapper.insertData(flowOriginDTO);
     }
+
+    @Test
+    public void selectMaxVersionByApiInfoTest() {
+        Integer version = flowCollectionMapper.selectMaxVersionByApiInfo("kevinsa-com",
+                "kevinsa.com", "/aaa/aaa", 1);
+        System.out.println(version);
+    }
 }

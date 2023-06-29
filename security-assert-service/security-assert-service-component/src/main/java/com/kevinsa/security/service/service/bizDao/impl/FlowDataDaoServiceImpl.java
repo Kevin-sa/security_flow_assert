@@ -1,5 +1,7 @@
 package com.kevinsa.security.service.service.bizDao.impl;
 
+import static com.kevinsa.security.service.enums.PluginDataSourceEnums.BURPSUITE;
+
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -30,10 +32,18 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
     @Autowired
     private HashUtils hashUtils;
 
+    /**
+     * 如果不存在历史数据则直接insert；
+     * 如果存在历史数据且request or response json tree数据不一致，则version + 1
+     */
     @Override
     public void flowDataSave(RequestInfoDTO requestInfoDTO, ResponseInfoDTO responseInfoDTO, String business) {
         List<String> respJsonTree = jsonHierarchyParseUtils.getJsonKey(responseInfoDTO.getBody(), "", 1);
         List<String> reqJsonTree = jsonHierarchyParseUtils.getJsonKey(requestInfoDTO.getBody(), "", 1);
+        int source = BURPSUITE.getSource();
+        Integer version;
+        version = flowCollectionMapper.selectMaxVersionByApiInfo(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(), source);
+
         FlowOriginDTO flowOriginDTO = FlowOriginDTO.builder()
                 .business(business)
                 .apiHost(requestInfoDTO.getHost())
@@ -43,16 +53,20 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
                 .requestJsonTree(ObjectMapperUtils.toJSON(reqJsonTree))
                 .responseBody(responseInfoDTO.getBody())
                 .responseJsonTree(ObjectMapperUtils.toJSON(respJsonTree))
-                .dataSource(0)
+                .dataSource(source)
                 .version(1)
-                .apiHash(getApiHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(), 0, 1))
+                .apiHash(getApiHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(), source))
                 .createTime(System.currentTimeMillis() / 1000)
                 .build();
+        if (version != null) {
+            flowOriginDTO.setVersion(version + 1);
+        }
         flowCollectionMapper.insertData(flowOriginDTO);
     }
 
-    private String getApiHash(String business, String apiHost, String apiPath, int dataSource, int version) {
-        String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource + "|" + version;
+    private String getApiHash(String business, String apiHost, String apiPath, int dataSource) {
+        String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource;
         return hashUtils.md5(message);
     }
+
 }

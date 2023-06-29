@@ -36,6 +36,7 @@ public class BaseExecutor<T> {
 
     private Map<String, ProcessContext<T>> flowUuidData = new ConcurrentHashMap<String, ProcessContext<T>>();
     private Map<String, String> flowUuidWithHostMap = new ConcurrentHashMap<String, String>();
+    private Map<String, ResponseInfoDTO> respWaitFilterMap = new ConcurrentHashMap<>();
 
     private static final Map<String, Class<? extends FilterActionUnit>> requestFilterActionUnitMap = new ConcurrentSkipListMap<>();
     private static final Map<String, Class<? extends FilterActionUnit>> responseFilterActionUnitMap = new ConcurrentSkipListMap<>();
@@ -101,7 +102,11 @@ public class BaseExecutor<T> {
                     ProcessContext<T> processContext = commonExecute((T) requestInfoDTO, regex, requestFilterActionUnitMap);
 
                     if (processContext.isFilterResult()) {
-                        flowUuidData.put(requestInfoDTO.getUuid(), processContext);
+                        logger.info("requestExecute filter matched uuid:" + requestInfoDTO.getUuid());
+                        flowUuidWithHostMap.put(requestInfoDTO.getUuid(), requestInfoDTO.getHost());
+                        if (!flowDataCache(requestInfoDTO.getUuid(), processContext)) {
+                            flowDataSave(requestInfoDTO, null, processContext.getBizMsg());
+                        }
                         break;
                     }
                 }
@@ -115,30 +120,49 @@ public class BaseExecutor<T> {
         try {
             String host = flowUuidWithHostMap.get(responseInfoDTO.getUuid());
             if (Strings.isBlank(host)) {
+                respWaitFilterMap.put(responseInfoDTO.getUuid(), responseInfoDTO);
                 return;
             }
-            for (String regex : patternCacheSet.keySet()) {
-                Pattern pattern = patternCacheSet.get(regex);
-                if (pattern == null) {
-                    continue;
-                }
-                if (pattern.matcher(host).matches()) {
-                    ProcessContext<T> processContext = commonExecute((T) responseInfoDTO, regex, responseFilterActionUnitMap);
-                    if (processContext.isFilterResult()) {
-                        ProcessContext<T> reqContext = flowUuidData.get(responseInfoDTO.getUuid());
-                        FlowDataDaoService.flowDataSave((RequestInfoDTO) reqContext.getData(), responseInfoDTO, processContext.getBizMsg());
-                        break;
-                    }
-                }
-            }
+            responseCommonFilter(host, responseInfoDTO);
         } catch (Exception e) {
             logger.error(PREFIX + "responseExecute error:", e);
-        } finally {
-            flowUuidData.remove(responseInfoDTO.getUuid());
-            flowUuidWithHostMap.remove(responseInfoDTO.getUuid());
         }
     }
 
+    private void responsePocketFilter(String uuid) {
+        try {
+            String host = flowUuidWithHostMap.get(uuid);
+            if (Strings.isBlank(host)) {
+                return;
+            }
+            ResponseInfoDTO responseInfoDTO = respWaitFilterMap.get(uuid);
+            responseCommonFilter(host, responseInfoDTO);
+        } catch (Exception e) {
+            logger.error(PREFIX + "responsePocketFilter error:", e);
+        }
+    }
+
+    private void responseCommonFilter(String host, ResponseInfoDTO responseInfoDTO) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        for (String regex : patternCacheSet.keySet()) {
+            Pattern pattern = patternCacheSet.get(regex);
+            if (pattern == null) {
+                continue;
+            }
+            if (pattern.matcher(host).matches()) {
+                ProcessContext<T> processContext = commonExecute((T) responseInfoDTO, regex, responseFilterActionUnitMap);
+                if (processContext.isFilterResult()) {
+                    if (!flowDataCache(responseInfoDTO.getUuid(), processContext)) {
+                        flowDataSave(null, responseInfoDTO, processContext.getBizMsg());
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * unload接口
+     */
     public void pluginUnload(String uuid) {
         for (String key : flowUuidData.keySet()) {
             if (key.startsWith(uuid)) flowUuidData.remove(key);
@@ -149,6 +173,9 @@ public class BaseExecutor<T> {
         }
     }
 
+    /**
+     * process执行器
+     */
     private ProcessContext<T> commonExecute(T data, String regex, Map<String, Class<? extends FilterActionUnit>> actionUnitMap)
             throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         ProcessContext<T> processContext = new ProcessContext<T>();
@@ -160,5 +187,28 @@ public class BaseExecutor<T> {
         obj.execute(processContext);
         processContext.setBizMsg(obj.getBizMsg());
         return processContext;
+    }
+
+    private boolean flowDataCache(String uuid, ProcessContext<T> processContext) {
+        if (flowUuidData.get(uuid) == null) {
+            flowUuidData.put(uuid, processContext);
+            return true;
+        }
+        return false;
+    }
+
+    private void flowDataSave(RequestInfoDTO requestInfoDTO, ResponseInfoDTO responseInfoDTO, String bizMsg) {
+        if (requestInfoDTO == null) {
+            ProcessContext<T> reqContext = flowUuidData.get(responseInfoDTO.getUuid());
+            FlowDataDaoService.flowDataSave((RequestInfoDTO) reqContext.getData(), responseInfoDTO, bizMsg);
+        } else {
+            if (respWaitFilterMap.containsKey(requestInfoDTO.getUuid())) {
+                responsePocketFilter(requestInfoDTO.getUuid());
+            }
+            ProcessContext<T> respContext = flowUuidData.get(requestInfoDTO.getUuid());
+            FlowDataDaoService.flowDataSave(requestInfoDTO, (ResponseInfoDTO) respContext.getData(), bizMsg);
+        }
+        flowUuidData.remove(responseInfoDTO.getUuid());
+        flowUuidWithHostMap.remove(responseInfoDTO.getUuid());
     }
 }

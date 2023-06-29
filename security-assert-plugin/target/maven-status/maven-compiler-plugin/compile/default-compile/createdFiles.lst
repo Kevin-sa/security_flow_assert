@@ -1,5 +1,6 @@
 main/java/com/kevinsa/assertlog/action/ResponseTransferAction.class
 main/java/com/kevinsa/assertlog/utils/HttpClientUtils.class
+main/java/com/kevinsa/assertlog/constant/PluginConfig.class
 main/java/com/kevinsa/assertlog/BurpExtender$1.class
 main/java/com/kevinsa/assertlog/action/UnloadAction.class
 main/java/com/kevinsa/assertlog/dto/UnloadReportDTO$UnloadReportDTOBuilder.class

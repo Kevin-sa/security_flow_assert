@@ -4,6 +4,7 @@
 /Users/kevinsa/sec-prog/security_flow_assert/security-assert-plugin/src/main/java/com/kevinsa/assertlog/BurpExtender.java
 /Users/kevinsa/sec-prog/security_flow_assert/security-assert-plugin/src/main/java/com/kevinsa/assertlog/action/ResponseTransferAction.java
 /Users/kevinsa/sec-prog/security_flow_assert/security-assert-plugin/src/main/java/com/kevinsa/assertlog/utils/HttpClientUtils.java
+/Users/kevinsa/sec-prog/security_flow_assert/security-assert-plugin/src/main/java/com/kevinsa/assertlog/constant/PluginConfig.java
 /Users/kevinsa/sec-prog/security_flow_assert/security-assert-plugin/src/main/java/com/kevinsa/assertlog/dto/ResponseInfoDTO.java
 /Users/kevinsa/sec-prog/security_flow_assert/security-assert-plugin/src/main/java/com/kevinsa/assertlog/dto/UnloadReportDTO.java
 /Users/kevinsa/sec-prog/security_flow_assert/security-assert-plugin/src/main/java/com/kevinsa/assertlog/utils/error/ValidateJsonProcessingException.java

@@ -17,8 +17,10 @@ public class FlowOriginDTO {
     private String headersInfo;
     private String requestPayload;
     private String requestJsonTree;
+    private String requestJsonTreeHash;
     private String responseBody;
     private String responseJsonTree;
+    private String responseJsonTreeHash;
     private Integer status;
     private Integer dataSource;
     private Integer version;

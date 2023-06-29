@@ -28,7 +28,7 @@ public class BurpSuitePluginController {
     public ApiResult<Boolean> requestInfoController(@RequestBody RequestInfoDTO requestInfoDTO) {
         try {
             log.info("/request");
-            baseExecutor.requestExecute(requestInfoDTO);
+//            baseExecutor.requestExecute(requestInfoDTO);
             return ApiResult.buildSuccess();
         } catch (Exception e) {
             log.error(PREFIX + "requestInfoController error:", e);

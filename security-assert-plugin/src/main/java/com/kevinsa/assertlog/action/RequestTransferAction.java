@@ -28,7 +28,7 @@ public class RequestTransferAction {
 
     private RequestInfoDTO transfer(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IRequestInfo iRequestInfo) {
         return RequestInfoDTO.builder()
-                .host(iRequestInfo.getHeaders().get(1))
+                .host(iRequestInfo.getHeaders().get(1).replace("Host: ", ""))
                 .path(getApiPath(iRequestInfo.getHeaders().get(0)))
                 .method(iRequestInfo.getMethod())
                 .headers(headerParser(iRequestInfo.getHeaders()))
