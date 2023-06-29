@@ -10,10 +10,11 @@ public abstract class FilterActionUnitTemplate<T> implements FilterActionUnit<T>
 
             contextTypeCheck(processContext);
             if (!processContext.isFilterResult()) return processContext;
-            statusCode(processContext);
+            statusCodeCheck(processContext);
             if (!processContext.isFilterResult()) return processContext;
             headersCheck(processContext);
             if (!processContext.isFilterResult()) return processContext;
+            loadOtherChecks(processContext);
             return processContext;
         } catch (Exception e) {
             processContext.setExceptMsg(e.getMessage());
@@ -29,7 +30,8 @@ public abstract class FilterActionUnitTemplate<T> implements FilterActionUnit<T>
 
     protected abstract void headersCheck(ProcessContext<T> processContext);
 
-    protected abstract void statusCode(ProcessContext<T> processContext);
+    protected abstract void statusCodeCheck(ProcessContext<T> processContext);
 
+    protected abstract void loadOtherChecks(ProcessContext<T> processContext);
 
 }

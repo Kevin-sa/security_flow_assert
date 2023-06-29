@@ -51,11 +51,17 @@ public class RespDefaultFilterAction<T> extends FilterActionUnitTemplate<T> {
     }
 
     @Override
-    protected void statusCode(ProcessContext<T> processContext) {
+    protected void statusCodeCheck(ProcessContext<T> processContext) {
         ResponseInfoDTO responseInfoDTO = ((ResponseInfoDTO) processContext.getData());
         if (responseInfoDTO.getStatusCode() != 200) {
             processContext.setFilterResult(false);
             processContext.setFilterMsg(this.getClass().getName() + " statusCode check error");
         }
     }
+
+    @Override
+    protected void loadOtherChecks(ProcessContext<T> processContext) {
+
+    }
+
 }

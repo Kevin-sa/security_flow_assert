@@ -36,6 +36,6 @@ public class ResponseTransferAction {
         byte[] responseBytes = iHttpRequestResponse.getResponse();
         byte[] responseBody = new byte[responseBytes.length - iResponseInfo.getBodyOffset()];
         System.arraycopy(responseBytes, iResponseInfo.getBodyOffset(), responseBody, 0, responseBody.length);
-        return new String(responseBytes, StandardCharsets.UTF_8);
+        return new String(responseBody, StandardCharsets.UTF_8);
     }
 }

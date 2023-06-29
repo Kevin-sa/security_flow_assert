@@ -6,6 +6,7 @@ import com.kevinsa.security.service.service.collect.base.ProcessContext;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -65,7 +66,15 @@ public class ReqDefaultFilterAction<T> extends FilterActionUnitTemplate<T> {
     }
 
     @Override
-    protected void statusCode(ProcessContext<T> processContext) {
+    protected void statusCodeCheck(ProcessContext<T> processContext) {
 
+    }
+
+    @Override
+    protected void loadOtherChecks(ProcessContext<T> processContext) {
+        RequestInfoDTO requestInfoDTO = (RequestInfoDTO) processContext.getData();
+        if (Strings.isBlank(requestInfoDTO.getBody())) {
+            requestInfoDTO.setBody("{}");
+        }
     }
 }

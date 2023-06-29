@@ -123,34 +123,37 @@ public class BaseExecutor<T> {
                 respWaitFilterMap.put(responseInfoDTO.getUuid(), responseInfoDTO);
                 return;
             }
-            responseCommonFilter(host, responseInfoDTO);
+            responseCommonFilter(host, responseInfoDTO, true);
         } catch (Exception e) {
             logger.error(PREFIX + "responseExecute error:", e);
         }
     }
 
-    private void responsePocketFilter(String uuid) {
+    private boolean responsePocketFilter(String uuid) {
         try {
             String host = flowUuidWithHostMap.get(uuid);
             if (Strings.isBlank(host)) {
-                return;
+                return false;
             }
             ResponseInfoDTO responseInfoDTO = respWaitFilterMap.get(uuid);
-            responseCommonFilter(host, responseInfoDTO);
+            ProcessContext<T> processContext =responseCommonFilter(host, responseInfoDTO, false);
+            return processContext.isFilterResult();
         } catch (Exception e) {
             logger.error(PREFIX + "responsePocketFilter error:", e);
         }
+        return false;
     }
 
-    private void responseCommonFilter(String host, ResponseInfoDTO responseInfoDTO) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    private ProcessContext<T> responseCommonFilter(String host, ResponseInfoDTO responseInfoDTO, boolean dataSave) throws Exception {
+        ProcessContext<T> processContext = new ProcessContext<>();
         for (String regex : patternCacheSet.keySet()) {
             Pattern pattern = patternCacheSet.get(regex);
             if (pattern == null) {
                 continue;
             }
             if (pattern.matcher(host).matches()) {
-                ProcessContext<T> processContext = commonExecute((T) responseInfoDTO, regex, responseFilterActionUnitMap);
-                if (processContext.isFilterResult()) {
+                processContext = commonExecute((T) responseInfoDTO, regex, responseFilterActionUnitMap);
+                if (processContext.isFilterResult() && dataSave) {
                     if (!flowDataCache(responseInfoDTO.getUuid(), processContext)) {
                         flowDataSave(null, responseInfoDTO, processContext.getBizMsg());
                     }
@@ -158,6 +161,7 @@ public class BaseExecutor<T> {
                 }
             }
         }
+        return processContext;
     }
 
     /**
@@ -190,7 +194,7 @@ public class BaseExecutor<T> {
     }
 
     private boolean flowDataCache(String uuid, ProcessContext<T> processContext) {
-        if (flowUuidData.get(uuid) == null) {
+        if (!flowUuidData.containsKey(uuid) && !respWaitFilterMap.containsKey(uuid)) {
             flowUuidData.put(uuid, processContext);
             return true;
         }
@@ -198,17 +202,39 @@ public class BaseExecutor<T> {
     }
 
     private void flowDataSave(RequestInfoDTO requestInfoDTO, ResponseInfoDTO responseInfoDTO, String bizMsg) {
-        if (requestInfoDTO == null) {
-            ProcessContext<T> reqContext = flowUuidData.get(responseInfoDTO.getUuid());
-            FlowDataDaoService.flowDataSave((RequestInfoDTO) reqContext.getData(), responseInfoDTO, bizMsg);
-        } else {
-            if (respWaitFilterMap.containsKey(requestInfoDTO.getUuid())) {
-                responsePocketFilter(requestInfoDTO.getUuid());
+        String uuid = getUuidWithDataSave(requestInfoDTO, responseInfoDTO);
+        try {
+            if (requestInfoDTO == null) {
+                uuid = responseInfoDTO.getUuid();
+                ProcessContext<T> reqContext = flowUuidData.get(uuid);
+                FlowDataDaoService.flowDataSave((RequestInfoDTO) reqContext.getData(), responseInfoDTO, bizMsg);
+            } else {
+                ResponseInfoDTO responseInfoDTOCache = null;
+                uuid = requestInfoDTO.getUuid();
+                if (respWaitFilterMap.containsKey(uuid)) {
+                    if (!responsePocketFilter(uuid)) {
+                        return;
+                    }
+                    responseInfoDTOCache = respWaitFilterMap.get(uuid);
+                } else {
+                    ProcessContext<T> respContext = flowUuidData.get(uuid);
+                    responseInfoDTOCache = (ResponseInfoDTO) respContext.getData();
+                }
+                FlowDataDaoService.flowDataSave(requestInfoDTO, responseInfoDTOCache, bizMsg);
             }
-            ProcessContext<T> respContext = flowUuidData.get(requestInfoDTO.getUuid());
-            FlowDataDaoService.flowDataSave(requestInfoDTO, (ResponseInfoDTO) respContext.getData(), bizMsg);
+        } catch (Exception e) {
+            logger.error(PREFIX + "flowDataSave error:", e);
+        } finally {
+            flowUuidData.remove(uuid);
+            flowUuidWithHostMap.remove(uuid);
+            respWaitFilterMap.remove(uuid);
         }
-        flowUuidData.remove(responseInfoDTO.getUuid());
-        flowUuidWithHostMap.remove(responseInfoDTO.getUuid());
+    }
+
+    private String getUuidWithDataSave(RequestInfoDTO requestInfoDTO, ResponseInfoDTO responseInfoDTO) {
+        if (requestInfoDTO == null) {
+            return responseInfoDTO.getUuid();
+        }
+        return requestInfoDTO.getUuid();
     }
 }
