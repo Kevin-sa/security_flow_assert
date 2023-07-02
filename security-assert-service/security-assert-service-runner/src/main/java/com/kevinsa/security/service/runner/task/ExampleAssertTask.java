@@ -3,6 +3,7 @@ package com.kevinsa.security.service.runner.task;
 
 import com.kevinsa.security.service.service.task.ExampleAssertTaskServer;
 import com.kevinsa.security.service.utils.ScheduledExecutorUtils;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Service;

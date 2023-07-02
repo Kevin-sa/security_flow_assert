@@ -4,6 +4,7 @@ create table flow_origin_data
     `business`                varchar(255)                             NOT NULL DEFAULT '0' COMMENT 'business id',
     `api_host`                varchar(255) COLLATE utf8mb4_unicode_ci  NOT NULL COMMENT 'API HOST',
     `api_path`                varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'API PATH',
+    `method`                  VARCHAR(10)                              NOT NULL DEFAULT '' COMMENT 'method',
     `headers_info`            json                                              DEFAULT NULL COMMENT 'headers',
     `request_payload`         json                                              DEFAULT NULL COMMENT 'request payload',
     `request_json_tree`       json                                              DEFAULT NULL COMMENT 'request payload json tree',

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.kevinsa.security.service.enums.OriginFlowDataStatusEnums;
+import com.kevinsa.security.service.utils.comparator.StringLengthAndCharAt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -28,11 +29,11 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
 
     private final String PREFIX = "FlowDataDaoServiceImpl ->";
 
-    @Autowired
-    private JsonHierarchyParseUtils jsonHierarchyParseUtils;
-
     @Resource
     private FlowCollectionMapper flowCollectionMapper;
+
+    @Autowired
+    private JsonHierarchyParseUtils jsonHierarchyParseUtils;
 
     @Autowired
     private HashUtils hashUtils;
@@ -45,7 +46,9 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
     public void flowDataSave(RequestInfoDTO requestInfoDTO, ResponseInfoDTO responseInfoDTO, String business) {
         try {
             List<String> reqJsonTree = jsonHierarchyParseUtils.getJsonKey(requestInfoDTO.getBody(), "", 1);
+            reqJsonTree.sort(new StringLengthAndCharAt());
             List<String> respJsonTree = jsonHierarchyParseUtils.getJsonKey(responseInfoDTO.getBody(), "", 1);
+            respJsonTree.sort(new StringLengthAndCharAt());
             int source = BURPSUITE.getSource();
             Integer version;
             version = flowCollectionMapper.selectMaxVersionByApiInfo(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(), source);
@@ -54,6 +57,7 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
                     .business(business)
                     .apiHost(requestInfoDTO.getHost())
                     .apiPath(requestInfoDTO.getPath())
+                    .method(requestInfoDTO.getMethod())
                     .headersInfo(ObjectMapperUtils.toJSON(requestInfoDTO.getHeaders()))
                     .requestPayload(requestInfoDTO.getBody())
                     .requestJsonTree(ObjectMapperUtils.toJSON(reqJsonTree))

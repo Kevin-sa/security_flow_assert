@@ -5,7 +5,6 @@ import java.util.Comparator;
 import org.springframework.stereotype.Component;
 
 
-@Component
 public class StringLengthAndCharAt implements Comparator<String> {
 
     @Override

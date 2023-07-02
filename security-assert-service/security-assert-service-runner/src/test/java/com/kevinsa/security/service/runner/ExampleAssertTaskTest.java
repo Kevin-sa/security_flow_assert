@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.Duration;
-import java.time.LocalTime;
 
 @SpringBootTest(classes = TaskApplication.class)
 @RunWith(SpringRunner.class)
@@ -27,13 +25,4 @@ public class ExampleAssertTaskTest {
         runnable.run();
     }
 
-    @Test
-    public void getInitDelay() {
-        LocalTime currentTime = LocalTime.now();
-
-        LocalTime targetTime = LocalTime.of(10, 0);
-
-        Duration duration = Duration.between(currentTime, targetTime);
-        System.out.println(duration.getSeconds());
-    }
 }

@@ -1,5 +1,7 @@
 package com.kevinsa.security.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jdk.nashorn.internal.objects.annotations.Property;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +20,6 @@ public class RequestInfoDTO implements Serializable {
     private String path;
     private String method;
     Map<String, String> headers;
+    @JsonProperty("payload")
     private String body;
 }

@@ -14,6 +14,7 @@ public class FlowOriginDTO {
     private String business;
     private String apiHost;
     private String apiPath;
+    private String method;
     private String headersInfo;
     private String requestPayload;
     private String requestJsonTree;

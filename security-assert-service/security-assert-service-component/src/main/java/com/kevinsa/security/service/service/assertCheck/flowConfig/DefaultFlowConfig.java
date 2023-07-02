@@ -6,6 +6,9 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import com.kevinsa.security.service.service.assertCheck.action.example.HttpReplayCheckAction;
+import com.kevinsa.security.service.service.assertCheck.action.example.JsonPathCheckAction;
+import com.kevinsa.security.service.service.assertCheck.action.example.JsonStructureCheckAction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,9 +36,11 @@ public class DefaultFlowConfig {
     @Bean
     public ProcessTemplate defaultAssertExecutor() {
         ProcessTemplate template = new ProcessTemplate();
-
         List<AssertStepAction> processConfig = Lists.newArrayList();
+
         processConfig.add(authCheckAction());
+        processConfig.add(httpReplayCheckAction());
+        processConfig.add(jsonStructureCheckAction());
 
         template.setProcessConfig(processConfig);
         return template;
@@ -43,5 +48,15 @@ public class DefaultFlowConfig {
 
     @Bean
     AuthCheckAction authCheckAction() {return new AuthCheckAction();}
+
+    @Bean
+    HttpReplayCheckAction httpReplayCheckAction() {return new HttpReplayCheckAction();}
+
+    @Bean
+    JsonStructureCheckAction jsonStructureCheckAction() {return new JsonStructureCheckAction();}
+
+    @Bean
+    JsonPathCheckAction jsonPathCheckAction() {return new JsonPathCheckAction();}
+
 
 }

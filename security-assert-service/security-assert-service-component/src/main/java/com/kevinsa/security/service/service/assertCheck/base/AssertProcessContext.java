@@ -1,14 +1,15 @@
 package com.kevinsa.security.service.service.assertCheck.base;
 
-import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
 
 public class AssertProcessContext {
 
     public String bizId;
 
+    public String bizMsg;
+
     private Boolean isBreak = false;
 
-    public FlowOriginDTO flowData;
+    private String exceptMsg = "";
 
     public String getBizId() {
         return bizId;
@@ -26,17 +27,19 @@ public class AssertProcessContext {
         return isBreak;
     }
 
-    public void setFlowData(FlowOriginDTO flowData) {
-        this.flowData = flowData;
+    public void setExceptMsg(String exceptMsg) {
+        this.exceptMsg = exceptMsg;
     }
 
-    public FlowOriginDTO getFlowData() {
-        return flowData;
+    public String getExceptMsg() {
+        return exceptMsg;
     }
 
-    public void contextClean() {
-        this.bizId = "";
-        this.isBreak = false;
-        this.flowData = null;
+    public void setBizMsg(String bizMsg) {
+        this.bizMsg = bizMsg;
+    }
+
+    public String getBizMsg() {
+        return bizMsg;
     }
 }
