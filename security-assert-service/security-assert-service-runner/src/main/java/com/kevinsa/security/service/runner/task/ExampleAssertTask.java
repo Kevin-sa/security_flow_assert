@@ -1,31 +1,27 @@
 package com.kevinsa.security.service.runner.task;
 
 
+import com.kevinsa.security.service.service.task.ExampleAssertTaskServer;
 import com.kevinsa.security.service.utils.ScheduledExecutorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Service;
 
 import com.kevinsa.security.service.runner.base.ScheduledBaseTask;
-import com.kevinsa.security.service.service.assertCheck.AssertExecutorFactory;
-import com.kevinsa.security.service.service.assertCheck.base.AssertProcessContext;
-import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ExampleAssertTask implements ScheduledBaseTask {
 
-    private final AssertExecutorFactory assertExecutorFactory;
-
-    private final AssertStepAction assertStepAction;
+    private final ExampleAssertTaskServer exampleAssertTaskServer;
 
     private final ScheduledExecutorUtils scheduledExecutorUtils;
 
     @Autowired
-    public ExampleAssertTask(AssertExecutorFactory assertExecutorFactory, AssertStepAction assertStepAction,
+    public ExampleAssertTask(ExampleAssertTaskServer exampleAssertTaskServer,
                              ScheduledExecutorUtils scheduledExecutorUtils) {
-        this.assertExecutorFactory = assertExecutorFactory;
-        this.assertStepAction = assertStepAction;
+        this.exampleAssertTaskServer = exampleAssertTaskServer;
         this.scheduledExecutorUtils = scheduledExecutorUtils;
     }
 
@@ -40,29 +36,24 @@ public class ExampleAssertTask implements ScheduledBaseTask {
     }
 
     @Override
-    public Integer initialDelay() {
+    public Integer initialDelayHour() {
         return 10;
     }
 
     @Override
-    public Integer period() {
+    public Integer periodHour() {
         return 24;
     }
 
     public Runnable exec() {
-        return () -> {
-            try {
-                AssertProcessContext assertProcessContext = assertExecutorFactory.createDefaultContext();
-                assertStepAction.process(assertProcessContext);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        };
+        return exampleAssertTaskServer.getRunnableExec(bizMsg());
     }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        System.out.println("example assert task");
-//        scheduledExecutorUtils.getInstance().scheduleAtFixedRate(exec(), 1000, 5000, TimeUnit.MILLISECONDS);
+        scheduledExecutorUtils.getInstance().scheduleAtFixedRate(exec(),
+                scheduledExecutorUtils.getInitialDelay(initialDelayHour(), 0, periodHour()),
+                periodHour() * 60 * 60,
+                TimeUnit.SECONDS);
     }
 }

@@ -4,11 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalTime;
+import java.time.temporal.TemporalUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class ScheduledExecutorUtils {
+
+    @Autowired
+    private DataUtils dataUtils;
 
     private static final int CORE_POOL_SIZE = 10;
 
@@ -25,5 +31,9 @@ public class ScheduledExecutorUtils {
 
     public ScheduledExecutorService getInstance() {
         return executorService;
+    }
+
+    public long getInitialDelay(int targetHour, int targetMinutes, int periodHours) {
+        return dataUtils.calculateInitialDelay(targetHour, targetMinutes, periodHours);
     }
 }

@@ -13,10 +13,10 @@ public interface ScheduledBaseTask extends ApplicationRunner {
     String bizMsg();
 
     @NotNull
-    Integer initialDelay();
+    Integer initialDelayHour();
 
     @NotNull
-    Integer period();
+    Integer periodHour();
 
     Runnable exec();
 

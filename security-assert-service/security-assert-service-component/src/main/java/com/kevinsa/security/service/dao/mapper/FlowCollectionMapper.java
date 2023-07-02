@@ -16,13 +16,18 @@ public interface FlowCollectionMapper {
 
     @Insert("INSERT IGNORE INTO flow_origin_data (`business`, `api_host`, `api_path`, `headers_info`, `request_payload`, " +
             "`request_json_tree`, `request_json_tree_hash`, `response_body`, `response_json_tree`, `response_json_tree_hash`, " +
-            "`data_source`, `status`, `create_time`) VALUES (" +
+            "`data_source`, `status`, `version`, `create_time`) VALUES (" +
             " #{business}, #{apiHost}, #{apiPath}, #{headersInfo}, #{requestPayload}, #{requestJsonTree}, #{requestJsonTreeHash}, " +
-            "#{responseBody}, #{responseJsonTree}, #{responseJsonTreeHash}, #{dataSource}, #{status}, #{createTime})")
+            "#{responseBody}, #{responseJsonTree}, #{responseJsonTreeHash}, #{dataSource}, #{status}, #{version}, #{createTime})")
     void insertData(FlowOriginDTO flowOriginDTO);
 
-    @Select("SELECT distinct api_path from flow_origin_data WHERE business = #{business} AND status = 1")
-    List<String> getDistinctInfoByBiz(@Param("business") String business);
+    @Select("SELECT distinct api_host from flow_origin_data WHERE business = #{business} AND status = #{status}")
+    List<String> getDistinctHostByBiz(@Param("business") String business, @Param("status") int status);
+
+    @Select("SELECT distinct api_path from flow_origin_data WHERE business = #{business} AND api_host = #{apiHost} " +
+            "AND status = #{status}")
+    List<String> getDistinctPathByBiz(@Param("business") String business, @Param("status") int status,
+                                      @Param("apiHost") String apiHost);
 
     @Results(
             value = {
@@ -36,9 +41,13 @@ public interface FlowCollectionMapper {
                     @Result(property = "dataSource", column = "data_source")
             }
     )
-    @Select("SELECT * FROM flow_origin_data WHERE status = 1 AND business = #{business} AND apiPath = #{apiPath}" +
-            "ORDER BY version desc LIMIT 1")
-    FlowOriginDTO getInfoByBizAndPath(@Param("business") String business, @Param("apiPath") String apiPath);
+    @Select("SELECT * FROM flow_origin_data WHERE status = 1 AND business = #{business} AND api_path = #{path}" +
+            " AND api_host = #{host} AND status = #{status}" +
+            " ORDER BY version desc LIMIT 1")
+    FlowOriginDTO getInfoByBizAndPath(@Param("business") String business,
+                                      @Param("host") String host,
+                                      @Param("path") String path,
+                                      @Param("status") int status);
 
 
     @Select("SELECT version FROM flow_origin_data WHERE business = #{business} AND api_host = #{apiHost} AND api_path = #{apiPath}" +

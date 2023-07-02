@@ -7,6 +7,6 @@ public class AuthCheckAction implements AssertStepAction<AssertProcessContext> {
 
     @Override
     public void process(AssertProcessContext processContext) {
-
+        System.out.println("path:" + processContext.getFlowData().getApiPath());
     }
 }

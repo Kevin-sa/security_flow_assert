@@ -33,8 +33,10 @@ public class DefaultFlowConfig {
     @Bean
     public ProcessTemplate defaultAssertExecutor() {
         ProcessTemplate template = new ProcessTemplate();
+
         List<AssertStepAction> processConfig = Lists.newArrayList();
         processConfig.add(authCheckAction());
+
         template.setProcessConfig(processConfig);
         return template;
     }

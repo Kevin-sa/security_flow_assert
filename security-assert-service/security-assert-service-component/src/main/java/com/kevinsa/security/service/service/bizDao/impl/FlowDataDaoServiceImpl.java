@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.kevinsa.security.service.enums.OriginFlowDataStatusEnums;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -64,6 +65,7 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
                             source, respJsonTree))
                     .dataSource(source)
                     .version(1)
+                    .status(OriginFlowDataStatusEnums.ENABLE.getStatus())
                     .createTime(System.currentTimeMillis() / 1000)
                     .build();
             if (version != null) {
