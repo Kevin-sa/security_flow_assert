@@ -101,13 +101,15 @@ public class BaseExecutor<T> {
                 if (pattern.matcher(requestInfoDTO.getHost()).matches()) {
                     ProcessContext<T> processContext = commonExecute((T) requestInfoDTO, regex, requestFilterActionUnitMap);
 
-                    if (processContext.isFilterResult()) {
+                    if (processContext.isFilterResult() && Strings.isBlank(processContext.getExceptMsg())) {
                         logger.info("requestExecute filter matched uuid:" + requestInfoDTO.getUuid());
                         flowUuidWithHostMap.put(requestInfoDTO.getUuid(), requestInfoDTO.getHost());
                         if (!flowDataCache(requestInfoDTO.getUuid(), processContext)) {
                             flowDataSave(requestInfoDTO, null, processContext.getBizMsg());
                         }
                         break;
+                    } else {
+                        executorFinally(requestInfoDTO.getUuid());
                     }
                 }
             }
@@ -136,7 +138,7 @@ public class BaseExecutor<T> {
                 return false;
             }
             ResponseInfoDTO responseInfoDTO = respWaitFilterMap.get(uuid);
-            ProcessContext<T> processContext =responseCommonFilter(host, responseInfoDTO, false);
+            ProcessContext<T> processContext = responseCommonFilter(host, responseInfoDTO, false);
             return processContext.isFilterResult();
         } catch (Exception e) {
             logger.error(PREFIX + "responsePocketFilter error:", e);
@@ -153,7 +155,7 @@ public class BaseExecutor<T> {
             }
             if (pattern.matcher(host).matches()) {
                 processContext = commonExecute((T) responseInfoDTO, regex, responseFilterActionUnitMap);
-                if (processContext.isFilterResult() && dataSave) {
+                if ((processContext.isFilterResult() && Strings.isBlank(processContext.getExceptMsg())) && dataSave) {
                     if (!flowDataCache(responseInfoDTO.getUuid(), processContext)) {
                         flowDataSave(null, responseInfoDTO, processContext.getBizMsg());
                     }
@@ -213,6 +215,7 @@ public class BaseExecutor<T> {
                 uuid = requestInfoDTO.getUuid();
                 if (respWaitFilterMap.containsKey(uuid)) {
                     if (!responsePocketFilter(uuid)) {
+                        executorFinally(uuid);
                         return;
                     }
                     responseInfoDTOCache = respWaitFilterMap.get(uuid);
@@ -225,9 +228,7 @@ public class BaseExecutor<T> {
         } catch (Exception e) {
             logger.error(PREFIX + "flowDataSave error:", e);
         } finally {
-            flowUuidData.remove(uuid);
-            flowUuidWithHostMap.remove(uuid);
-            respWaitFilterMap.remove(uuid);
+            executorFinally(uuid);
         }
     }
 
@@ -236,5 +237,11 @@ public class BaseExecutor<T> {
             return responseInfoDTO.getUuid();
         }
         return requestInfoDTO.getUuid();
+    }
+
+    private void executorFinally(String uuid) {
+        flowUuidData.remove(uuid);
+        flowUuidWithHostMap.remove(uuid);
+        respWaitFilterMap.remove(uuid);
     }
 }

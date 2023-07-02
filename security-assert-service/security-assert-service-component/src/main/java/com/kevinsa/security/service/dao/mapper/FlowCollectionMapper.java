@@ -21,13 +21,6 @@ public interface FlowCollectionMapper {
             "#{responseBody}, #{responseJsonTree}, #{responseJsonTreeHash}, #{dataSource}, #{status}, #{createTime})")
     void insertData(FlowOriginDTO flowOriginDTO);
 
-    @Insert("INSERT IGNORE INTO flow_origin_data (`business`, `api_host`, `api_path`, `headers_info`, `request_payload`, " +
-            "`request_json_tree`, `request_json_tree_hash`, `response_body`, `response_json_tree`, `response_json_tree_hash`, " +
-            "`data_source`, `status`, `create_time`) VALUES (" +
-            " #{business}, #{apiHost}, #{apiPath}, #{headersInfo}, #{requestPayload}, #{requestJsonTree}, #{requestJsonTreeHash}, " +
-            "#{responseBody}, #{responseJsonTree}, #{responseJsonTreeHash}, #{dataSource}, #{status}, #{createTime})")
-    void insertDataVersionIncr(FlowOriginDTO flowOriginDTO);
-
     @Select("SELECT distinct api_path from flow_origin_data WHERE business = #{business} AND status = 1")
     List<String> getDistinctInfoByBiz(@Param("business") String business);
 

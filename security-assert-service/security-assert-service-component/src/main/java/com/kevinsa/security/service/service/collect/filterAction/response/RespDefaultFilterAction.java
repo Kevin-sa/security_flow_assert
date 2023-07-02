@@ -9,9 +9,16 @@ import com.kevinsa.security.service.service.collect.base.ProcessContext;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 @Slf4j
 @Component
 public class RespDefaultFilterAction<T> extends FilterActionUnitTemplate<T> {
+
+    private final List<Short> statusCodeWhiteList = Arrays.asList((short)200, (short)302);
+
     @Override
     public String getPattern() {
         return "(.)*\\.kwaixiaodian\\.com";
@@ -53,7 +60,7 @@ public class RespDefaultFilterAction<T> extends FilterActionUnitTemplate<T> {
     @Override
     protected void statusCodeCheck(ProcessContext<T> processContext) {
         ResponseInfoDTO responseInfoDTO = ((ResponseInfoDTO) processContext.getData());
-        if (responseInfoDTO.getStatusCode() != 200) {
+        if (!statusCodeWhiteList.contains(responseInfoDTO.getStatusCode())) {
             processContext.setFilterResult(false);
             processContext.setFilterMsg(this.getClass().getName() + " statusCode check error");
         }

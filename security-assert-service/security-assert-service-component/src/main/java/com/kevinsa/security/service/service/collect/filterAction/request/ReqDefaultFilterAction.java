@@ -54,7 +54,21 @@ public class ReqDefaultFilterAction<T> extends FilterActionUnitTemplate<T> {
     @Override
     protected void contextTypeCheck(ProcessContext<T> processContext) {
         RequestInfoDTO requestInfoDTO = (RequestInfoDTO) processContext.getData();
-        if (!requestInfoDTO.getHeaders().get("Content-Type").startsWith("application/json")) {
+        String contextType = requestInfoDTO.getHeaders().get("Content-Type");
+        if (!Strings.isBlank(contextType) && !contextType.startsWith("application/json")) {
+            processContext.setFilterResult(false);
+            processContext.setFilterMsg(this.getClass().getName() + " contextTypeCheck check error");
+            return;
+        }
+
+        String accept = requestInfoDTO.getHeaders().get("Accept");
+        if (!Strings.isBlank(accept) && !accept.startsWith("application/json")) {
+            processContext.setFilterResult(false);
+            processContext.setFilterMsg(this.getClass().getName() + " contextTypeCheck check error");
+            return;
+        }
+
+        if (Strings.isBlank(contextType) && Strings.isBlank(accept)) {
             processContext.setFilterResult(false);
             processContext.setFilterMsg(this.getClass().getName() + " contextTypeCheck check error");
         }

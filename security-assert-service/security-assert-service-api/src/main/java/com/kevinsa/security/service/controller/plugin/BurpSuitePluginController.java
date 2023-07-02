@@ -5,6 +5,7 @@ import com.kevinsa.security.service.dto.ResponseInfoDTO;
 import com.kevinsa.security.service.dto.UnloadReportDTO;
 import com.kevinsa.security.service.enums.ErrorCodeEnum;
 import com.kevinsa.security.service.service.collect.BaseExecutor;
+import com.kevinsa.security.service.utils.ObjectMapperUtils;
 import com.kevinsa.security.service.vo.ApiResult;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class BurpSuitePluginController {
     @RequestMapping(value = "/request", method = RequestMethod.POST)
     public ApiResult<Boolean> requestInfoController(@RequestBody RequestInfoDTO requestInfoDTO) {
         try {
-            log.info("/request");
+            log.info("/request requestInfoDTO:{}", ObjectMapperUtils.toJSON(requestInfoDTO));
             baseExecutor.requestExecute(requestInfoDTO);
             return ApiResult.buildSuccess();
         } catch (Exception e) {
@@ -39,7 +40,7 @@ public class BurpSuitePluginController {
     @RequestMapping(value = "/response", method = RequestMethod.POST)
     public ApiResult<Boolean> responseInfoController(@RequestBody ResponseInfoDTO responseInfoDTO) {
         try {
-            log.info("/response");
+            log.info("/response responseInfoDTO:{}", ObjectMapperUtils.toJSON(responseInfoDTO));
             baseExecutor.responseExecute(responseInfoDTO);
             return ApiResult.buildSuccess();
         } catch (Exception e) {
