@@ -13,8 +13,8 @@ import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
 
 @Mapper
 public interface FlowCollectionMapper {
-
-    @Insert("INSERT IGNORE INTO flow_origin_data (`business`, `api_host`, `api_path`, `method`, `headers_info`, `request_payload`, " +
+//    IGNORE
+    @Insert("INSERT INTO flow_origin_data (`business`, `api_host`, `api_path`, `method`, `headers_info`, `request_payload`, " +
             "`request_json_tree`, `request_json_tree_hash`, `response_body`, `response_json_tree`, `response_json_tree_hash`, " +
             "`data_source`, `status`, `version`, `create_time`) VALUES (" +
             " #{business}, #{apiHost}, #{apiPath}, #{method}, #{headersInfo}, #{requestPayload}, #{requestJsonTree}, #{requestJsonTreeHash}, " +

@@ -62,11 +62,14 @@ public class HttpClientUtils {
             Call call = client.newCall(request);
             Response response = call.execute();
             if (response.body() != null) {
-                try (BufferedReader reader = new BufferedReader(response.body().charStream())) {
+                if (response.body().contentLength() == -1) {
+                    BufferedReader reader = new BufferedReader(response.body().charStream());
+                    StringBuilder body = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        System.out.println(line);
+                        body.append(line);
                     }
+                    return body.toString();
                 }
                 return response.body().toString();
             }

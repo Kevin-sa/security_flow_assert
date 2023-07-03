@@ -33,6 +33,7 @@ public class HttpReplayCheckAction implements AssertStepAction<DefaultProcessCon
             }
             FlowOriginDTO replayFlowDTO = flowOriginDTO;
             replayFlowDTO.setResponseBody(replayBody);
+            context.setReplayFlowDTO(replayFlowDTO);
         } catch (Exception e) {
             context.setIsBreak(true);
             context.setExceptMsg("HttpReplayCheckAction error:" + e.getMessage());

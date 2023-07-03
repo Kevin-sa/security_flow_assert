@@ -32,8 +32,11 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
             String replayRespJsonTreeHash = getJsonTreeHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
                     flowOriginDTO.getApiPath(), flowOriginDTO.getDataSource(), respJsonTree);
             if (!flowOriginDTO.getRequestJsonTreeHash().equals(replayRespJsonTreeHash)) {
+                replayFlowDTO.setRequestJsonTreeHash(replayRespJsonTreeHash);
                 replayFlowDTO.setVersion(flowOriginDTO.getVersion() + 1);
                 replayFlowDTO.setCreateTime(System.currentTimeMillis() / 1000);
+                replayFlowDTO.setApiHash(getApiHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
+                        flowOriginDTO.getApiPath(), flowOriginDTO.getDataSource(), replayFlowDTO.getVersion()));
                 flowCollectionMapper.insertData(replayFlowDTO);
             }
         } catch (Exception e) {
@@ -46,6 +49,11 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
                                    List<String> jsonTreeList) {
         String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource + "|"
                 + String.join(",", jsonTreeList);
+        return hashUtils.md5(message);
+    }
+
+    private String getApiHash(String business, String apiHost, String apiPath, int dataSource, int version) {
+        String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource + "|" + version;
         return hashUtils.md5(message);
     }
 }
