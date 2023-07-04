@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.kevinsa.security.service.enums.OriginFlowDataStatusEnums;
+import com.kevinsa.security.service.service.common.impl.HashCommonServiceImpl;
 import com.kevinsa.security.service.utils.comparator.StringLengthAndCharAt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.dto.RequestInfoDTO;
 import com.kevinsa.security.service.dto.ResponseInfoDTO;
 import com.kevinsa.security.service.service.bizDao.FlowDataDaoService;
-import com.kevinsa.security.service.utils.HashUtils;
 import com.kevinsa.security.service.utils.JsonHierarchyParseUtils;
 import com.kevinsa.security.service.utils.ObjectMapperUtils;
 
@@ -36,7 +36,7 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
     private JsonHierarchyParseUtils jsonHierarchyParseUtils;
 
     @Autowired
-    private HashUtils hashUtils;
+    private HashCommonServiceImpl hashCommonService;
 
     /**
      * 如果不存在历史数据则直接insert；
@@ -61,11 +61,11 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
                     .headersInfo(ObjectMapperUtils.toJSON(requestInfoDTO.getHeaders()))
                     .requestPayload(requestInfoDTO.getBody())
                     .requestJsonTree(ObjectMapperUtils.toJSON(reqJsonTree))
-                    .requestJsonTreeHash(getJsonTreeHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
+                    .requestJsonTreeHash(hashCommonService.getJsonTreeHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
                             source, respJsonTree))
                     .responseBody(responseInfoDTO.getBody())
                     .responseJsonTree(ObjectMapperUtils.toJSON(respJsonTree))
-                    .responseJsonTreeHash(getJsonTreeHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
+                    .responseJsonTreeHash(hashCommonService.getJsonTreeHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
                             source, respJsonTree))
                     .dataSource(source)
                     .version(1)
@@ -75,23 +75,12 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
             if (version != null) {
                 flowOriginDTO.setVersion(version + 1);
             }
-            flowOriginDTO.setApiHash(getApiHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
+            flowOriginDTO.setApiHash(hashCommonService.getApiHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
                     source, flowOriginDTO.getVersion()));
             flowCollectionMapper.insertData(flowOriginDTO);
         } catch (Exception e) {
             log.error(PREFIX + "flowDataSave error:", e);
         }
-    }
-
-    private String getApiHash(String business, String apiHost, String apiPath, int dataSource, int version) {
-        String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource + "|" + version;
-        return hashUtils.md5(message);
-    }
-
-    private String getJsonTreeHash(String business, String apiHost, String apiPath, int dataSource, List<String> jsonTreeList) {
-        String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource + "|"
-                + String.join(",", jsonTreeList);
-        return hashUtils.md5(message);
     }
 
 }

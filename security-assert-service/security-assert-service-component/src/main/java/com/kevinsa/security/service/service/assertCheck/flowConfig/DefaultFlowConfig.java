@@ -40,6 +40,8 @@ public class DefaultFlowConfig {
 
         processConfig.add(authCheckAction());
         processConfig.add(httpReplayCheckAction());
+        processConfig.add(jsonPathCheckAction());
+
         processConfig.add(jsonStructureCheckAction());
 
         template.setProcessConfig(processConfig);

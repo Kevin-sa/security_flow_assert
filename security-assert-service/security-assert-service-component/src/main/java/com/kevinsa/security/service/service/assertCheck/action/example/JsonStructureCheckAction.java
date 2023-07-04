@@ -4,8 +4,9 @@ import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 import com.kevinsa.security.service.service.assertCheck.context.DefaultProcessContext;
-import com.kevinsa.security.service.utils.HashUtils;
+import com.kevinsa.security.service.service.common.impl.HashCommonServiceImpl;
 import com.kevinsa.security.service.utils.JsonHierarchyParseUtils;
+import com.kevinsa.security.service.utils.comparator.StringLengthAndCharAt;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
@@ -17,7 +18,7 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
     private JsonHierarchyParseUtils jsonHierarchyParseUtils;
 
     @Autowired
-    private HashUtils hashUtils;
+    private HashCommonServiceImpl hashCommonService;
 
     @Resource
     private FlowCollectionMapper flowCollectionMapper;
@@ -29,13 +30,14 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
             FlowOriginDTO replayFlowDTO = context.getReplayFlowDTO();
             FlowOriginDTO flowOriginDTO = context.getFlowOriginDTO();
             List<String> respJsonTree = jsonHierarchyParseUtils.getJsonKey(replayFlowDTO.getResponseBody(), "", 1);
-            String replayRespJsonTreeHash = getJsonTreeHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
+            respJsonTree.sort(new StringLengthAndCharAt());
+            String replayRespJsonTreeHash = hashCommonService.getJsonTreeHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
                     flowOriginDTO.getApiPath(), flowOriginDTO.getDataSource(), respJsonTree);
-            if (!flowOriginDTO.getRequestJsonTreeHash().equals(replayRespJsonTreeHash)) {
-                replayFlowDTO.setRequestJsonTreeHash(replayRespJsonTreeHash);
+            if (!flowOriginDTO.getResponseJsonTreeHash().equals(replayRespJsonTreeHash)) {
+                replayFlowDTO.setResponseJsonTreeHash(replayRespJsonTreeHash);
                 replayFlowDTO.setVersion(flowOriginDTO.getVersion() + 1);
                 replayFlowDTO.setCreateTime(System.currentTimeMillis() / 1000);
-                replayFlowDTO.setApiHash(getApiHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
+                replayFlowDTO.setApiHash(hashCommonService.getApiHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
                         flowOriginDTO.getApiPath(), flowOriginDTO.getDataSource(), replayFlowDTO.getVersion()));
                 flowCollectionMapper.insertData(replayFlowDTO);
             }
@@ -43,17 +45,5 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
             context.setIsBreak(true);
             context.setExceptMsg("JsonStructureCheckAction error:" + e.getMessage());
         }
-    }
-
-    private String getJsonTreeHash(String business, String apiHost, String apiPath, int dataSource,
-                                   List<String> jsonTreeList) {
-        String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource + "|"
-                + String.join(",", jsonTreeList);
-        return hashUtils.md5(message);
-    }
-
-    private String getApiHash(String business, String apiHost, String apiPath, int dataSource, int version) {
-        String message = business + "|" + apiHost + "|" + apiPath + "|" + dataSource + "|" + version;
-        return hashUtils.md5(message);
     }
 }
