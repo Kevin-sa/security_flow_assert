@@ -43,14 +43,14 @@ VALUES ('*', '', '', '', 0, 1);
 
 CREATE TABLE `security_asset_result`
 (
-     `id`                           bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-     `rule_id`                      bigint(20) NOT NULL,
-     `flow_id`                      bigint(20) NOT NULL,
-     `replay_flow_id`               bigint(20) NOT NULL COMMENT 0,
-     `response_body`                json  DEFAULT NULL COMMENT 'request body',
-     `diff_value`                   json DEFAULT NULL COMMENT 'data compare diff value',
-     `create_time`                  varchar(300)     NOT NULL DEFAULT '0' COMMENT '创建时间',
-     PRIMARY KEY (`id`),
-     FOREIGN KEY (flow_id) REFERENCES flow_origin_data(id),
-     FOREIGN KEY (rule_id) REFERENCES assert_json_path_rule(id)
+    `id`             bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+    `rule_id`        bigint(20) NOT NULL,
+    `flow_id`        bigint(20) NOT NULL,
+    `replay_flow_id` bigint(20) NOT NULL COMMENT 0,
+    `response_body`  json                  DEFAULT NULL COMMENT 'request body',
+    `diff_value`     json                  DEFAULT NULL COMMENT 'data compare diff value',
+    `create_time`    varchar(300) NOT NULL DEFAULT '0' COMMENT '创建时间',
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (flow_id) REFERENCES flow_origin_data (id),
+    FOREIGN KEY (rule_id) REFERENCES assert_json_path_rule (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='assert result table';

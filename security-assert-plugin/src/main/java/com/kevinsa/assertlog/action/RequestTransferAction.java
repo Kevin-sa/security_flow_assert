@@ -52,7 +52,6 @@ public class RequestTransferAction {
         byte[] requestBytes = iHttpRequestResponse.getRequest();
         byte[] requestBody = new byte[requestBytes.length - iRequestInfo.getBodyOffset()];
         System.arraycopy(requestBytes, iRequestInfo.getBodyOffset(), requestBody, 0, requestBody.length);
-//        return helpers.bytesToString(requestBody);
         return new String(requestBody, StandardCharsets.UTF_8);
     }
 
