@@ -2,12 +2,7 @@ package com.kevinsa.security.service.dao.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
 
@@ -18,7 +13,8 @@ public interface FlowCollectionMapper {
             "`data_source`, `status`, `version`, `create_time`) VALUES (" +
             " #{business}, #{apiHost}, #{apiPath}, #{method}, #{headersInfo}, #{requestPayload}, #{requestJsonTree}, #{requestJsonTreeHash}, " +
             "#{responseBody}, #{responseJsonTree}, #{responseJsonTreeHash}, #{dataSource}, #{status}, #{version}, #{createTime})")
-    void insertData(FlowOriginDTO flowOriginDTO);
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    long insertData(FlowOriginDTO flowOriginDTO);
 
     @Select("SELECT distinct api_host from flow_origin_data WHERE business = #{business} AND status = #{status}")
     List<String> getDistinctHostByBiz(@Param("business") String business, @Param("status") int status);

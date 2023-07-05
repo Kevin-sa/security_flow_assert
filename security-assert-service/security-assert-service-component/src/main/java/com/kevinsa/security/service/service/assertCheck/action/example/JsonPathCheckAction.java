@@ -3,6 +3,7 @@ package com.kevinsa.security.service.service.assertCheck.action.example;
 import com.jayway.jsonpath.JsonPath;
 import com.kevinsa.security.service.dao.dto.AssetJsonPathRuleDTO;
 import com.kevinsa.security.service.dao.dto.AssetJsonPathRuleDataDTO;
+import com.kevinsa.security.service.dao.dto.AssetResultDiffValueDTO;
 import com.kevinsa.security.service.dao.dto.SecurityAssetResultDTO;
 import com.kevinsa.security.service.dao.mapper.AssetJsonPathRuleMapper;
 import com.kevinsa.security.service.dao.mapper.SecurityAssetResultMapper;
@@ -11,6 +12,8 @@ import com.kevinsa.security.service.service.assertCheck.context.DefaultProcessCo
 import com.kevinsa.security.service.utils.ObjectMapperUtils;
 
 import javax.annotation.Resource;
+
+import java.util.Collections;
 
 import static com.kevinsa.security.service.enums.JsonPathTypeEnums.REQUEST_SUCCESS;
 import static com.kevinsa.security.service.enums.JsonPathTypeEnums.SECURITY_ASSET;
@@ -68,12 +71,17 @@ public class JsonPathCheckAction implements AssertStepAction<DefaultProcessConte
                 AssetJsonPathRuleDataDTO.class);
         Object respValue = JsonPath.read(responseBody, assetRule.getJsonPath());
 
+        AssetResultDiffValueDTO assetResultDiffValueDTO = AssetResultDiffValueDTO.builder()
+                .value(Collections.singletonList(respValue))
+                .build();
+
         if (respValue != assetRule.getValue()) {
             SecurityAssetResultDTO securityAssetResultDTO = SecurityAssetResultDTO.builder()
                     .ruleId(assetRuleDTO.getId())
                     .flowId(context.getFlowOriginDTO().getId())
+                    .replayFlowId(0L)
                     .responseBody(responseBody)
-                    .diffValue((String) respValue)
+                    .diffValue(ObjectMapperUtils.toJSON(assetResultDiffValueDTO))
                     .createTime(System.currentTimeMillis() / 1000)
                     .build();
             securityAssetResultMapper.insert(securityAssetResultDTO);

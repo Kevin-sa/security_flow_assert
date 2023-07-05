@@ -37,6 +37,14 @@ CREATE TABLE `assert_json_path_rule`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='assert json path rule';
 
+
+INSERT INTO assert_json_path_rule (`business`, `api_host`, `api_path`, `data`, `type`, `status`)
+VALUES ('kwai-shop', 's.kwaixiaodian.com', '/rest/app/tts/ks/seller/order/query/v2', '{"jsonPath": "$.result", "value": 1}', 1, 1);
+
+INSERT INTO assert_json_path_rule (`business`, `api_host`, `api_path`, `data`, `type`, `status`)
+VALUES ('kwai-shop', 's.kwaixiaodian.com', '/rest/app/tts/ks/seller/order/query/v2', '{"jsonPath": "$.total", "value": 0}', 2, 1);
+
+
 -- insert into default rule: check response body tree diff with origin data
 INSERT INTO assert_json_path_rule (`business`, `api_host`, `api_path`, `data`, `type`, `status`)
 VALUES ('*', '', '', '', 0, 1);
@@ -44,13 +52,14 @@ VALUES ('*', '', '', '', 0, 1);
 CREATE TABLE `security_asset_result`
 (
      `id`                           bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-     `rule_id`                      bigint(20) NOT NULL,
-     `flow_id`                      bigint(20) NOT NULL,
-     `replay_flow_id`               bigint(20) NOT NULL COMMENT 0,
+     `rule_id`                      bigint(20) unsigned NOT NULL,
+     `flow_id`                      bigint(20) unsigned NOT NULL,
+     `replay_flow_id`               bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT 'replay_flow_id',
      `response_body`                json  DEFAULT NULL COMMENT 'request body',
      `diff_value`                   json DEFAULT NULL COMMENT 'data compare diff value',
      `create_time`                  varchar(300)     NOT NULL DEFAULT '0' COMMENT '创建时间',
      PRIMARY KEY (`id`),
      FOREIGN KEY (flow_id) REFERENCES flow_origin_data(id),
-     FOREIGN KEY (rule_id) REFERENCES assert_json_path_rule(id)
+     FOREIGN KEY (rule_id) REFERENCES assert_json_path_rule(id),
+     FOREIGN KEY (replay_flow_id) REFERENCES assert_json_path_rule(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='assert result table';
