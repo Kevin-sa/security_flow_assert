@@ -9,6 +9,7 @@ import com.kevinsa.security.service.dao.mapper.AssetJsonPathRuleMapper;
 import com.kevinsa.security.service.dao.mapper.SecurityAssetResultMapper;
 import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 import com.kevinsa.security.service.service.assertCheck.context.DefaultProcessContext;
+import com.kevinsa.security.service.service.operator.base.OperatorUnitServiceHelper;
 import com.kevinsa.security.service.utils.ObjectMapperUtils;
 
 import javax.annotation.Resource;
@@ -19,13 +20,22 @@ import static com.kevinsa.security.service.enums.JsonPathTypeEnums.REQUEST_SUCCE
 import static com.kevinsa.security.service.enums.JsonPathTypeEnums.SECURITY_ASSET;
 import static com.kevinsa.security.service.enums.OriginFlowDataStatusEnums.ENABLE;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class JsonPathCheckAction implements AssertStepAction<DefaultProcessContext> {
+
+    private static final Logger logger = LoggerFactory.getLogger(JsonPathCheckAction.class);
 
     @Resource
     private AssetJsonPathRuleMapper assetJsonPathRuleMapper;
 
     @Resource
     private SecurityAssetResultMapper securityAssetResultMapper;
+
+    @Autowired
+    private OperatorUnitServiceHelper operatorUnitServiceHelper;
 
     /**
      * 两部分逻辑
@@ -34,16 +44,20 @@ public class JsonPathCheckAction implements AssertStepAction<DefaultProcessConte
      */
     @Override
     public void process(DefaultProcessContext context) {
-        String responseBody = context.getReplayFlowDTO().getResponseBody();
-        reqSuccessCheck(responseBody, context);
+        try {
+            String responseBody = context.getReplayFlowDTO().getResponseBody();
+            reqSuccessCheck(responseBody, context);
 
-        if (context.getIsBreak()) {
-            return;
+            if (context.getIsBreak()) {
+                return;
+            }
+            securityAssetCheck(responseBody, context);
+        } catch (Exception e) {
+            logger.error("JsonPathCheckAction process error:", e);
         }
-        securityAssetCheck(responseBody, context);
     }
 
-    private void reqSuccessCheck(String responseBody, DefaultProcessContext context) {
+    private <T extends Comparable<T>> void reqSuccessCheck(String responseBody, DefaultProcessContext context) throws Exception {
         AssetJsonPathRuleDTO reqSuccessRuleDTO = assetJsonPathRuleMapper.getRuleByTypeAndApiInfo(
                 ENABLE.getStatus(), REQUEST_SUCCESS.getTypeId(), context.getReplayFlowDTO().getBusiness(),
                 context.getReplayFlowDTO().getApiHost(), context.getReplayFlowDTO().getApiPath()
@@ -54,12 +68,13 @@ public class JsonPathCheckAction implements AssertStepAction<DefaultProcessConte
         AssetJsonPathRuleDataDTO reqSuccessRule = ObjectMapperUtils.fromJSON(reqSuccessRuleDTO.getData(),
                 AssetJsonPathRuleDataDTO.class);
         Object respValue = JsonPath.read(responseBody, reqSuccessRule.getJsonPath());
-        if (respValue != reqSuccessRule.getValue()) {
+        boolean result = operatorUnitServiceHelper.execute(reqSuccessRule.getOperatorType(), (T) respValue, (T) reqSuccessRule.getRightValue());
+        if (!result) {
             context.setIsBreak(true);
         }
     }
 
-    private void securityAssetCheck(String responseBody, DefaultProcessContext context) {
+    private <T extends Comparable<T>> void securityAssetCheck(String responseBody, DefaultProcessContext context) throws Exception {
         AssetJsonPathRuleDTO assetRuleDTO = assetJsonPathRuleMapper.getRuleByTypeAndApiInfo(
                 ENABLE.getStatus(), SECURITY_ASSET.getTypeId(), context.getReplayFlowDTO().getBusiness(),
                 context.getReplayFlowDTO().getApiHost(), context.getReplayFlowDTO().getApiPath()
@@ -75,7 +90,9 @@ public class JsonPathCheckAction implements AssertStepAction<DefaultProcessConte
                 .value(Collections.singletonList(respValue))
                 .build();
 
-        if (respValue != assetRule.getValue()) {
+        boolean result = operatorUnitServiceHelper.execute(assetRule.getOperatorType(), (T) respValue, (T) assetRule.getRightValue());
+
+        if (!result) {
             SecurityAssetResultDTO securityAssetResultDTO = SecurityAssetResultDTO.builder()
                     .ruleId(assetRuleDTO.getId())
                     .flowId(context.getFlowOriginDTO().getId())

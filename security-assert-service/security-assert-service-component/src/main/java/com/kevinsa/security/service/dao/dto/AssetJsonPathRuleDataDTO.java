@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AssetJsonPathRuleDataDTO {
     private String jsonPath;
-    private Object value;
+    private String operatorType;
+    private Object rightValue;
 }
