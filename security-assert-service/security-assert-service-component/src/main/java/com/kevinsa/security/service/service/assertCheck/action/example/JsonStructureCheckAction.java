@@ -3,8 +3,10 @@ package com.kevinsa.security.service.service.assertCheck.action.example;
 import com.kevinsa.security.service.dao.dto.AssetResultDiffValueDTO;
 import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
 import com.kevinsa.security.service.dao.dto.SecurityAssetResultDTO;
+import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.dao.mapper.SecurityAssetResultMapper;
+import com.kevinsa.security.service.enums.AssertRuleTypeEnums;
 import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 import com.kevinsa.security.service.service.assertCheck.context.DefaultProcessContext;
 import com.kevinsa.security.service.service.common.impl.HashCommonServiceImpl;
@@ -15,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +34,8 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
     @Resource
     private SecurityAssetResultMapper securityAssetResultMapper;
 
+    @Resource
+    private AssetActionRuleMapper assetActionRuleMapper;
 
     @Override
     public void process(DefaultProcessContext context) {
@@ -74,8 +76,11 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
         AssetResultDiffValueDTO assetResultDiffValueDTO = AssetResultDiffValueDTO.builder()
                 .value(differenceList)
                 .build();
+
+        Long defaultRuleId = 0L;
+        defaultRuleId = assetActionRuleMapper.getIdByType(AssertRuleTypeEnums.DEFAULT.getTypeId());
         SecurityAssetResultDTO securityAssetResultDTO = SecurityAssetResultDTO.builder()
-                .ruleId(1L)
+                .ruleId(defaultRuleId)
                 .flowId(id)
                 .replayFlowId(replayId)
                 .responseBody(respBody)

@@ -4,11 +4,10 @@ package com.kevinsa.security.service.cpompent.dao;
 import com.kevinsa.security.service.Application;
 import com.kevinsa.security.service.dao.dto.AssetJsonPathRuleDTO;
 import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
-import com.kevinsa.security.service.dao.mapper.AssetJsonPathRuleMapper;
+import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.utils.HashUtils;
 import com.kevinsa.security.service.utils.JsonHierarchyParseUtils;
-import net.bytebuddy.asm.Advice;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.util.List;
 
-import static com.kevinsa.security.service.enums.JsonPathTypeEnums.REQUEST_SUCCESS;
+import static com.kevinsa.security.service.enums.AssertRuleTypeEnums.REQUEST_SUCCESS;
 import static com.kevinsa.security.service.enums.OriginFlowDataStatusEnums.ENABLE;
 
 @SpringBootTest(classes = Application.class)
@@ -35,7 +34,7 @@ public class MapperTest {
     private HashUtils hashUtils;
 
     @Resource
-    private AssetJsonPathRuleMapper assetJsonPathRuleMapper;
+    private AssetActionRuleMapper assetActionRuleMapper;
 
 
     @Test
@@ -78,7 +77,7 @@ public class MapperTest {
 
     @Test
     public void assetJsonPathRuleMapperTest() {
-        AssetJsonPathRuleDTO reqSuccessRuleDTO = assetJsonPathRuleMapper.getRuleByTypeAndApiInfo(
+        AssetJsonPathRuleDTO reqSuccessRuleDTO = assetActionRuleMapper.getRuleByTypeAndApiInfo(
                 ENABLE.getStatus(), REQUEST_SUCCESS.getTypeId(), "", "", ""
         );
         System.out.println(reqSuccessRuleDTO == null);

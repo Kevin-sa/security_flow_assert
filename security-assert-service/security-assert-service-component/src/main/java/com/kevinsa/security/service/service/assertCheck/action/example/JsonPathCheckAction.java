@@ -5,8 +5,9 @@ import com.kevinsa.security.service.dao.dto.AssetJsonPathRuleDTO;
 import com.kevinsa.security.service.dao.dto.AssetJsonPathRuleDataDTO;
 import com.kevinsa.security.service.dao.dto.AssetResultDiffValueDTO;
 import com.kevinsa.security.service.dao.dto.SecurityAssetResultDTO;
-import com.kevinsa.security.service.dao.mapper.AssetJsonPathRuleMapper;
+import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.dao.mapper.SecurityAssetResultMapper;
+import com.kevinsa.security.service.enums.AssertRuleTypeEnums;
 import com.kevinsa.security.service.service.assertCheck.base.AssertStepAction;
 import com.kevinsa.security.service.service.assertCheck.context.DefaultProcessContext;
 import com.kevinsa.security.service.service.operator.base.OperatorUnitServiceHelper;
@@ -16,8 +17,6 @@ import javax.annotation.Resource;
 
 import java.util.Collections;
 
-import static com.kevinsa.security.service.enums.JsonPathTypeEnums.REQUEST_SUCCESS;
-import static com.kevinsa.security.service.enums.JsonPathTypeEnums.SECURITY_ASSET;
 import static com.kevinsa.security.service.enums.OriginFlowDataStatusEnums.ENABLE;
 
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public class JsonPathCheckAction implements AssertStepAction<DefaultProcessConte
     private static final Logger logger = LoggerFactory.getLogger(JsonPathCheckAction.class);
 
     @Resource
-    private AssetJsonPathRuleMapper assetJsonPathRuleMapper;
+    private AssetActionRuleMapper assetActionRuleMapper;
 
     @Resource
     private SecurityAssetResultMapper securityAssetResultMapper;
@@ -58,8 +57,8 @@ public class JsonPathCheckAction implements AssertStepAction<DefaultProcessConte
     }
 
     private <T extends Comparable<T>> void reqSuccessCheck(String responseBody, DefaultProcessContext context) throws Exception {
-        AssetJsonPathRuleDTO reqSuccessRuleDTO = assetJsonPathRuleMapper.getRuleByTypeAndApiInfo(
-                ENABLE.getStatus(), REQUEST_SUCCESS.getTypeId(), context.getReplayFlowDTO().getBusiness(),
+        AssetJsonPathRuleDTO reqSuccessRuleDTO = assetActionRuleMapper.getRuleByTypeAndApiInfo(
+                ENABLE.getStatus(), AssertRuleTypeEnums.REQUEST_SUCCESS.getTypeId(), context.getReplayFlowDTO().getBusiness(),
                 context.getReplayFlowDTO().getApiHost(), context.getReplayFlowDTO().getApiPath()
         );
         if (reqSuccessRuleDTO == null) {
@@ -75,8 +74,8 @@ public class JsonPathCheckAction implements AssertStepAction<DefaultProcessConte
     }
 
     private <T extends Comparable<T>> void securityAssetCheck(String responseBody, DefaultProcessContext context) throws Exception {
-        AssetJsonPathRuleDTO assetRuleDTO = assetJsonPathRuleMapper.getRuleByTypeAndApiInfo(
-                ENABLE.getStatus(), SECURITY_ASSET.getTypeId(), context.getReplayFlowDTO().getBusiness(),
+        AssetJsonPathRuleDTO assetRuleDTO = assetActionRuleMapper.getRuleByTypeAndApiInfo(
+                ENABLE.getStatus(), AssertRuleTypeEnums.SECURITY_ASSET.getTypeId(), context.getReplayFlowDTO().getBusiness(),
                 context.getReplayFlowDTO().getApiHost(), context.getReplayFlowDTO().getApiPath()
         );
         if (assetRuleDTO == null) {
