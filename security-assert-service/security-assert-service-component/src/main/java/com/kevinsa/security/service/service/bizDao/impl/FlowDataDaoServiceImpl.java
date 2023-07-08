@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.enums.OriginFlowDataStatusEnums;
 import com.kevinsa.security.service.service.common.impl.HashCommonServiceImpl;
 import com.kevinsa.security.service.utils.comparator.StringLengthAndCharAt;
@@ -31,6 +32,9 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
 
     @Resource
     private FlowCollectionMapper flowCollectionMapper;
+
+    @Resource
+    private AssetActionRuleMapper assetActionRuleMapper;
 
     @Autowired
     private JsonHierarchyParseUtils jsonHierarchyParseUtils;

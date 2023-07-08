@@ -17,6 +17,10 @@ public class BaseDataInitService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        initDefaultAssertRule();
+    }
+
+    private void initDefaultAssertRule() {
         Long defaultId = 0L;
         defaultId = assetActionRuleMapper.getIdByType(AssertRuleTypeEnums.DEFAULT.getTypeId());
         if (defaultId == 0L) {
@@ -32,4 +36,5 @@ public class BaseDataInitService implements ApplicationRunner {
             assetActionRuleMapper.insertRule(assetJsonPathRuleDTO);
         }
     }
+
 }

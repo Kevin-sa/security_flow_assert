@@ -12,6 +12,18 @@ public class AuthCheckAction implements AssertStepAction<DefaultProcessContext> 
      */
     @Override
     public void process(DefaultProcessContext processContext) {
-        System.out.println(processContext.getFlowOriginDTO().getApiHost() + processContext.getFlowOriginDTO().getApiPath());
+
+    }
+
+    private void authExpireCheck() {
+
+    }
+
+    private void getCsrfToken() {
+
+    }
+
+    private void getAuthToken() {
+
     }
 }
