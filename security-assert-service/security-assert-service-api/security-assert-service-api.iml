@@ -25,6 +25,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13.1" level="project" />
     <orderEntry type="module" module-name="security-assert-service-component" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.3.27" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.3.27" level="project" />
