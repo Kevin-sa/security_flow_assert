@@ -3,10 +3,12 @@ package com.kevinsa.security.service.service.collect;
 
 import com.kevinsa.security.service.dto.RequestInfoDTO;
 import com.kevinsa.security.service.dto.ResponseInfoDTO;
+import com.kevinsa.security.service.enums.StateMachineStatusEnums;
 import com.kevinsa.security.service.service.collect.base.FilterActionUnit;
 import com.kevinsa.security.service.service.collect.base.ProcessContext;
 import com.kevinsa.security.service.service.bizDao.impl.FlowDataDaoServiceImpl;
 
+import com.kevinsa.security.service.service.dao.ClickHouseFactoryService;
 import org.apache.logging.log4j.util.Strings;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,6 @@ import java.util.regex.Pattern;
 public class BaseExecutor<T> {
 
     private static final String PREFIX = "BaseExecutor ->";
-
     private static final Logger logger = LoggerFactory.getLogger(BaseExecutor.class);
 
     private Map<String, ProcessContext<T>> flowUuidData = new ConcurrentHashMap<String, ProcessContext<T>>();
@@ -50,6 +51,9 @@ public class BaseExecutor<T> {
 
     @Autowired
     private FlowDataDaoServiceImpl FlowDataDaoService;
+
+    @Autowired
+    private ClickHouseFactoryService clickHouseFactoryService;
 
     static {
         Reflections requestReflections = new Reflections("com.kevinsa.security.service.service.collect.filterAction.request");
@@ -93,6 +97,7 @@ public class BaseExecutor<T> {
 
     public void requestExecute(RequestInfoDTO requestInfoDTO) {
         try {
+            loadOtherFactory(requestInfoDTO, null, StateMachineStatusEnums.PLUGIN_REQUEST.getStatusId());
             for (String regex : patternCacheSet.keySet()) {
                 Pattern pattern = patternCacheSet.get(regex);
                 if (pattern == null) {
@@ -120,6 +125,7 @@ public class BaseExecutor<T> {
 
     public void responseExecute(ResponseInfoDTO responseInfoDTO) {
         try {
+            loadOtherFactory(null, responseInfoDTO, StateMachineStatusEnums.PLUGIN_RESPONSE.getStatusId());
             String host = flowUuidWithHostMap.get(responseInfoDTO.getUuid());
             if (Strings.isBlank(host)) {
                 respWaitFilterMap.put(responseInfoDTO.getUuid(), responseInfoDTO);
@@ -243,5 +249,10 @@ public class BaseExecutor<T> {
         flowUuidData.remove(uuid);
         flowUuidWithHostMap.remove(uuid);
         respWaitFilterMap.remove(uuid);
+    }
+
+
+    private void loadOtherFactory(RequestInfoDTO requestInfoDTO, ResponseInfoDTO responseInfoDTO, int statusId) {
+        clickHouseFactoryService.pluginCollectEntrance(requestInfoDTO, responseInfoDTO, statusId);
     }
 }

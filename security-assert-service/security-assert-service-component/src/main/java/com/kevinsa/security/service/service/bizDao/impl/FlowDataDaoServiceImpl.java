@@ -9,13 +9,14 @@ import javax.annotation.Resource;
 import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.enums.OriginFlowDataStatusEnums;
 import com.kevinsa.security.service.service.common.impl.HashCommonServiceImpl;
+import com.kevinsa.security.service.service.dao.ClickHouseFactoryService;
 import com.kevinsa.security.service.utils.comparator.StringLengthAndCharAt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
+import com.kevinsa.security.service.dao.po.FlowOriginPO;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.dto.RequestInfoDTO;
 import com.kevinsa.security.service.dto.ResponseInfoDTO;
@@ -32,9 +33,6 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
 
     @Resource
     private FlowCollectionMapper flowCollectionMapper;
-
-    @Resource
-    private AssetActionRuleMapper assetActionRuleMapper;
 
     @Autowired
     private JsonHierarchyParseUtils jsonHierarchyParseUtils;
@@ -57,7 +55,7 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
             Integer version;
             version = flowCollectionMapper.selectMaxVersionByApiInfo(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(), source);
 
-            FlowOriginDTO flowOriginDTO = FlowOriginDTO.builder()
+            FlowOriginPO flowOriginPO = FlowOriginPO.builder()
                     .business(business)
                     .apiHost(requestInfoDTO.getHost())
                     .apiPath(requestInfoDTO.getPath())
@@ -77,14 +75,15 @@ public class FlowDataDaoServiceImpl implements FlowDataDaoService {
                     .createTime(System.currentTimeMillis() / 1000)
                     .build();
             if (version != null) {
-                flowOriginDTO.setVersion(version + 1);
+                flowOriginPO.setVersion(version + 1);
             }
-            flowOriginDTO.setApiHash(hashCommonService.getApiHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
-                    source, flowOriginDTO.getVersion()));
-            flowCollectionMapper.insertData(flowOriginDTO);
+            flowOriginPO.setApiHash(hashCommonService.getApiHash(business, requestInfoDTO.getHost(), requestInfoDTO.getPath(),
+                    source, flowOriginPO.getVersion()));
+            flowCollectionMapper.insertData(flowOriginPO);
         } catch (Exception e) {
             log.error(PREFIX + "flowDataSave error:", e);
         }
     }
+
 
 }

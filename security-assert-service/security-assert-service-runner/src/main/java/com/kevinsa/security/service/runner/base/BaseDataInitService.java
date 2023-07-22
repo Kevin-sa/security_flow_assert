@@ -1,6 +1,6 @@
 package com.kevinsa.security.service.runner.base;
 
-import com.kevinsa.security.service.dao.dto.AssetJsonPathRuleDTO;
+import com.kevinsa.security.service.dao.po.AssetJsonPathRulePO;
 import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.enums.AssertRuleTypeEnums;
 import org.springframework.boot.ApplicationArguments;
@@ -24,7 +24,7 @@ public class BaseDataInitService implements ApplicationRunner {
         Long defaultId = 0L;
         defaultId = assetActionRuleMapper.getIdByType(AssertRuleTypeEnums.DEFAULT.getTypeId());
         if (defaultId == 0L) {
-            AssetJsonPathRuleDTO assetJsonPathRuleDTO = AssetJsonPathRuleDTO.builder()
+            AssetJsonPathRulePO assetJsonPathRulePO = AssetJsonPathRulePO.builder()
                     .apiPath("*")
                     .apiHost("*")
                     .business("*")
@@ -33,7 +33,7 @@ public class BaseDataInitService implements ApplicationRunner {
                     .type(AssertRuleTypeEnums.DEFAULT.getTypeId())
                     .creatTime(System.currentTimeMillis() / 1000)
                     .build();
-            assetActionRuleMapper.insertRule(assetJsonPathRuleDTO);
+            assetActionRuleMapper.insertRule(assetJsonPathRulePO);
         }
     }
 

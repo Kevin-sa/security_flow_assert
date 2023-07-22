@@ -1,4 +1,4 @@
-package com.kevinsa.security.service.dao.dto;
+package com.kevinsa.security.service.dao.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SecurityAssetResultDTO {
+public class SecurityAssetResultPO {
     private Long id;
     private Long ruleId;
     private Long flowId;

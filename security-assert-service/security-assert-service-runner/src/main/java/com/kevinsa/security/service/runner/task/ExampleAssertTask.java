@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.kevinsa.security.service.runner.base.ScheduledBaseTask;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class ExampleAssertTask implements ScheduledBaseTask {
 
@@ -49,11 +51,9 @@ public class ExampleAssertTask implements ScheduledBaseTask {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        System.out.println("this is ExampleAssertTask");
-//        System.out.println(System.currentTimeMillis());
-//        scheduledExecutorUtils.getInstance().scheduleAtFixedRate(exec(),
-//                scheduledExecutorUtils.getInitialDelay(initialDelayHour(), 0, periodHour()),
-//                periodHour() * 60 * 60,
-//                TimeUnit.SECONDS);
+        scheduledExecutorUtils.getInstance().scheduleAtFixedRate(exec(),
+                scheduledExecutorUtils.getInitialDelay(initialDelayHour(), 0, periodHour()),
+                periodHour() * 60 * 60,
+                TimeUnit.SECONDS);
     }
 }

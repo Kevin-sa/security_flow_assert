@@ -2,8 +2,8 @@ package com.kevinsa.security.service.cpompent.dao;
 
 
 import com.kevinsa.security.service.Application;
-import com.kevinsa.security.service.dao.dto.AssetJsonPathRuleDTO;
-import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
+import com.kevinsa.security.service.dao.po.AssetJsonPathRulePO;
+import com.kevinsa.security.service.dao.po.FlowOriginPO;
 import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.utils.HashUtils;
@@ -39,7 +39,7 @@ public class MapperTest {
 
     @Test
     public void originDataInsertTest() {
-        FlowOriginDTO flowOriginDTO = FlowOriginDTO.builder()
+        FlowOriginPO flowOriginPO = FlowOriginPO.builder()
                 .apiHost("kevinsa.com")
                 .apiPath("/aaa/aaa")
                 .business("kevinsa-com")
@@ -47,7 +47,7 @@ public class MapperTest {
                 .dataSource(1)
                 .status(0)
                 .build();
-        flowCollectionMapper.insertData(flowOriginDTO);
+        flowCollectionMapper.insertData(flowOriginPO);
     }
 
     @Test
@@ -59,10 +59,10 @@ public class MapperTest {
 
     @Test
     public void hashCompare() {
-        List<FlowOriginDTO> results = flowCollectionMapper.getInfoByBizAndPaths();
-        for (FlowOriginDTO flowOriginDTO : results) {
-            List<String> respJsonTree = jsonHierarchyParseUtils.getJsonKey(flowOriginDTO.getResponseBody(), "", 1);
-            System.out.println(getJsonTreeHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(), flowOriginDTO.getApiPath(), flowOriginDTO.getDataSource(), respJsonTree));
+        List<FlowOriginPO> results = flowCollectionMapper.getInfoByBizAndPaths();
+        for (FlowOriginPO flowOriginPO : results) {
+            List<String> respJsonTree = jsonHierarchyParseUtils.getJsonKey(flowOriginPO.getResponseBody(), "", 1);
+            System.out.println(getJsonTreeHash(flowOriginPO.getBusiness(), flowOriginPO.getApiHost(), flowOriginPO.getApiPath(), flowOriginPO.getDataSource(), respJsonTree));
         }
 
     }
@@ -77,9 +77,9 @@ public class MapperTest {
 
     @Test
     public void assetJsonPathRuleMapperTest() {
-        AssetJsonPathRuleDTO reqSuccessRuleDTO = assetActionRuleMapper.getRuleByTypeAndApiInfo(
+        AssetJsonPathRulePO reqSuccessRulePO = assetActionRuleMapper.getRuleByTypeAndApiInfo(
                 ENABLE.getStatus(), REQUEST_SUCCESS.getTypeId(), "", "", ""
         );
-        System.out.println(reqSuccessRuleDTO == null);
+        System.out.println(reqSuccessRulePO == null);
     }
 }

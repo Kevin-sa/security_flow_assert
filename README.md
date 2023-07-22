@@ -26,6 +26,15 @@
 - service-api：用于流量采集且经过自定义```request\response```过滤去重处理后存储到mysql中，request和response原子性通过burpsuite的```iInterceptedProxyMessage.getMessageReference()```来保证；
 - server-runner：实现流量定期回放、流式处理assert的能力，支持在interface上做横向扩展，且对于不符合预期做mysql处理。todo:该部分没有存储完成状态机，后续可优化存储到clickhouse中；
 
+### 使用指南
+- burpsuite-plugin在security-assert-plugin工程中，编译后并在burpsuite中加载，需要注意的是：目前不支持图形化的server地址配置，故需要在文件中硬编码server端地址
+```main.java.com.kevinsa.assertlog.constant.PluginConfig```
+- 规则配置及符合匹配逻辑的流量存储强依赖于mysql故需要在```application.yml```中配置mysql相关配置，mysql需要的表配置在
+```security-assert-service/db/mysql.sql```文件中
+- plugin上报的所有流量信息基于assert验证时的流量信息可以存储在clickhouse中，需如果做信息存储
+    - 需要配置文件中配置clickhouse相关配置 ```security-assert-service/security-assert-service-component/src/main/java/com/kevinsa/security/service/constant/ClickHouseConf.java```
+    - 开启clickhouse流量存储开关 ```security-assert-service/security-assert-service-component/src/main/java/com/kevinsa/security/service/constant/SwitchConf.java```
+    - clickhouse需要的表信息见 ```security-assert-service/db/clickhouse.sql```
 ### service-api关键信息
 ```security-assert-service/security-assert-service-component/src/main/java/com/kevinsa/security/service/service/collect```
 ```aidl
@@ -183,5 +192,6 @@ mysql> select * from assert_action_rule where type != 0;
 2 rows in set (0.00 sec)
 ```
 ### feature
-- burpsuite-puligin：目前插件不支持UI图形化，即流量收集的service地址硬编码；
-- 状态机：目前mysql中仅存储原始流量信息、assert规则信息、assert规则结果信息，没有对流量重放、assert判断等状态机做存储，利于问题排查，规划做clickhouse存储并支持自定义状态机；
+- [x] plugin上报的response、request信息以及assert验证时重放的流量信息做clickhouse存储，不区分是否符合自定的filter规则
+- [ ] burpsuite-puligin：目前插件不支持UI图形化，即流量收集的service地址硬编码；
+- [ ] 状态机：目前mysql中仅存储原始流量信息、assert规则信息、assert规则结果信息，没有对流量重放、assert判断等状态机做存储，利于问题排查，规划做clickhouse存储并支持自定义状态机；

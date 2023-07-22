@@ -1,4 +1,4 @@
-package com.kevinsa.security.service.dao.dto;
+package com.kevinsa.security.service.dao.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +11,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssetResultDiffValueDTO {
+public class AssetResultDiffValuePO {
     private List<Object> value;
 }

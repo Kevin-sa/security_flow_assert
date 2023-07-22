@@ -1,4 +1,4 @@
-package com.kevinsa.security.service.dao.dto;
+package com.kevinsa.security.service.dao.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FlowOriginDTO {
+public class FlowOriginPO {
     private Long id;
     private String business;
     private String apiHost;

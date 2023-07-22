@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 
-import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
+import com.kevinsa.security.service.dao.po.FlowOriginPO;
 
 @Mapper
 public interface FlowCollectionMapper {
@@ -14,7 +14,7 @@ public interface FlowCollectionMapper {
             " #{business}, #{apiHost}, #{apiPath}, #{method}, #{headersInfo}, #{requestPayload}, #{requestJsonTree}, #{requestJsonTreeHash}, " +
             "#{responseBody}, #{responseJsonTree}, #{responseJsonTreeHash}, #{dataSource}, #{status}, #{version}, #{createTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    long insertData(FlowOriginDTO flowOriginDTO);
+    long insertData(FlowOriginPO flowOriginPO);
 
     @Select("SELECT distinct api_host from flow_origin_data WHERE business = #{business} AND status = #{status}")
     List<String> getDistinctHostByBiz(@Param("business") String business, @Param("status") int status);
@@ -42,10 +42,10 @@ public interface FlowCollectionMapper {
     @Select("SELECT * FROM flow_origin_data WHERE business = #{business} AND api_path = #{path}" +
             " AND api_host = #{host} AND status = #{status}" +
             " ORDER BY version desc LIMIT 1")
-    FlowOriginDTO getInfoByBizAndPath(@Param("business") String business,
-                                      @Param("host") String host,
-                                      @Param("path") String path,
-                                      @Param("status") int status);
+    FlowOriginPO getInfoByBizAndPath(@Param("business") String business,
+                                     @Param("host") String host,
+                                     @Param("path") String path,
+                                     @Param("status") int status);
 
 
     @Results(
@@ -64,7 +64,7 @@ public interface FlowCollectionMapper {
             }
     )
     @Select("SELECT * FROM flow_origin_data WHERE api_path = '/rest/app/tts/ks/seller/order/query/v2'")
-    List<FlowOriginDTO> getInfoByBizAndPaths();
+    List<FlowOriginPO> getInfoByBizAndPaths();
 
     @Select("SELECT version FROM flow_origin_data WHERE business = #{business} AND api_host = #{apiHost} AND api_path = #{apiPath}" +
             " AND data_source = #{source} " +

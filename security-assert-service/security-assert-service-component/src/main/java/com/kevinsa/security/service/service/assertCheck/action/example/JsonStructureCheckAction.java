@@ -1,8 +1,8 @@
 package com.kevinsa.security.service.service.assertCheck.action.example;
 
-import com.kevinsa.security.service.dao.dto.AssetResultDiffValueDTO;
-import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
-import com.kevinsa.security.service.dao.dto.SecurityAssetResultDTO;
+import com.kevinsa.security.service.dao.po.AssetResultDiffValuePO;
+import com.kevinsa.security.service.dao.po.FlowOriginPO;
+import com.kevinsa.security.service.dao.po.SecurityAssetResultPO;
 import com.kevinsa.security.service.dao.mapper.AssetActionRuleMapper;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.dao.mapper.SecurityAssetResultMapper;
@@ -40,22 +40,22 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
     @Override
     public void process(DefaultProcessContext context) {
         try {
-            FlowOriginDTO replayFlowDTO = context.getReplayFlowDTO();
-            FlowOriginDTO flowOriginDTO = context.getFlowOriginDTO();
+            FlowOriginPO replayFlowDTO = context.getReplayFlowDTO();
+            FlowOriginPO flowOriginPO = context.getFlowOriginPO();
             List<String> respJsonTree = jsonHierarchyParseUtils.getJsonKey(replayFlowDTO.getResponseBody(), "", 1);
             respJsonTree.sort(new StringLengthAndCharAt());
-            String replayRespJsonTreeHash = hashCommonService.getJsonTreeHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
-                    flowOriginDTO.getApiPath(), flowOriginDTO.getDataSource(), respJsonTree);
-            if (!flowOriginDTO.getResponseJsonTreeHash().equals(replayRespJsonTreeHash)) {
+            String replayRespJsonTreeHash = hashCommonService.getJsonTreeHash(flowOriginPO.getBusiness(), flowOriginPO.getApiHost(),
+                    flowOriginPO.getApiPath(), flowOriginPO.getDataSource(), respJsonTree);
+            if (!flowOriginPO.getResponseJsonTreeHash().equals(replayRespJsonTreeHash)) {
                 replayFlowDTO.setResponseJsonTree(ObjectMapperUtils.toJSON(respJsonTree));
                 replayFlowDTO.setResponseJsonTreeHash(replayRespJsonTreeHash);
-                replayFlowDTO.setVersion(flowOriginDTO.getVersion() + 1);
+                replayFlowDTO.setVersion(flowOriginPO.getVersion() + 1);
                 replayFlowDTO.setCreateTime(System.currentTimeMillis() / 1000);
-                replayFlowDTO.setApiHash(hashCommonService.getApiHash(flowOriginDTO.getBusiness(), flowOriginDTO.getApiHost(),
-                        flowOriginDTO.getApiPath(), flowOriginDTO.getDataSource(), replayFlowDTO.getVersion()));
+                replayFlowDTO.setApiHash(hashCommonService.getApiHash(flowOriginPO.getBusiness(), flowOriginPO.getApiHost(),
+                        flowOriginPO.getApiPath(), flowOriginPO.getDataSource(), replayFlowDTO.getVersion()));
                 long replayId = flowCollectionMapper.insertData(replayFlowDTO);
                 insertAssetResult(replayFlowDTO.getId(), replayId, replayFlowDTO.getResponseBody(),
-                        flowOriginDTO.getRequestJsonTree(), respJsonTree);
+                        flowOriginPO.getRequestJsonTree(), respJsonTree);
             }
         } catch (Exception e) {
             context.setIsBreak(true);
@@ -73,20 +73,20 @@ public class JsonStructureCheckAction implements AssertStepAction<DefaultProcess
                 .filter(element -> !respJsonTree.contains(element))
                 .collect(Collectors.toList());
 
-        AssetResultDiffValueDTO assetResultDiffValueDTO = AssetResultDiffValueDTO.builder()
+        AssetResultDiffValuePO assetResultDiffValuePO = AssetResultDiffValuePO.builder()
                 .value(differenceList)
                 .build();
 
         Long defaultRuleId = 0L;
         defaultRuleId = assetActionRuleMapper.getIdByType(AssertRuleTypeEnums.DEFAULT.getTypeId());
-        SecurityAssetResultDTO securityAssetResultDTO = SecurityAssetResultDTO.builder()
+        SecurityAssetResultPO securityAssetResultPO = SecurityAssetResultPO.builder()
                 .ruleId(defaultRuleId)
                 .flowId(id)
                 .replayFlowId(replayId)
                 .responseBody(respBody)
-                .diffValue(ObjectMapperUtils.toJSON(assetResultDiffValueDTO))
+                .diffValue(ObjectMapperUtils.toJSON(assetResultDiffValuePO))
                 .createTime(System.currentTimeMillis() / 1000)
                 .build();
-        securityAssetResultMapper.insert(securityAssetResultDTO);
+        securityAssetResultMapper.insert(securityAssetResultPO);
     }
 }

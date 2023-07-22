@@ -1,22 +1,22 @@
 package com.kevinsa.security.service.service.assertCheck.context;
 
-import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
+import com.kevinsa.security.service.dao.po.FlowOriginPO;
 import com.kevinsa.security.service.service.assertCheck.base.AssertProcessContext;
 
 public class DefaultProcessContext extends AssertProcessContext {
 
-    public FlowOriginDTO flowOriginDTO;
+    public FlowOriginPO flowOriginPO;
 
-    public FlowOriginDTO replayFlowDTO;
+    public FlowOriginPO replayFlowDTO;
 
     public String resultMsg;
 
-    public void setFlowOriginDTO(FlowOriginDTO flowOriginDTO) {
-        this.flowOriginDTO = flowOriginDTO;
+    public void setFlowOriginPO(FlowOriginPO flowOriginPO) {
+        this.flowOriginPO = flowOriginPO;
     }
 
-    public FlowOriginDTO getFlowOriginDTO() {
-        return flowOriginDTO;
+    public FlowOriginPO getFlowOriginPO() {
+        return flowOriginPO;
     }
 
     public void setResultMsg(String resultMsg) {
@@ -27,16 +27,16 @@ public class DefaultProcessContext extends AssertProcessContext {
         return resultMsg;
     }
 
-    public void setReplayFlowDTO(FlowOriginDTO replayFlowDTO) {
+    public void setReplayFlowDTO(FlowOriginPO replayFlowDTO) {
         this.replayFlowDTO = replayFlowDTO;
     }
 
-    public FlowOriginDTO getReplayFlowDTO() {
+    public FlowOriginPO getReplayFlowDTO() {
         return replayFlowDTO;
     }
 
     public void remove() {
-        this.setFlowOriginDTO(null);
+        this.setFlowOriginPO(null);
         this.setIsBreak(false);
         this.setExceptMsg(null);
     }

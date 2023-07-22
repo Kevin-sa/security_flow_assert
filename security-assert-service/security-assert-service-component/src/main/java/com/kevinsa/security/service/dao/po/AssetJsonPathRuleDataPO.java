@@ -1,4 +1,4 @@
-package com.kevinsa.security.service.dao.dto;
+package com.kevinsa.security.service.dao.po;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssetJsonPathRuleDataDTO {
+public class AssetJsonPathRuleDataPO {
     private String jsonPath;
     @JsonProperty("type")
     private String operatorType;

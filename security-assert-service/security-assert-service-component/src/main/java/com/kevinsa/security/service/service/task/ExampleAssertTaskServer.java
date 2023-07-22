@@ -1,6 +1,6 @@
 package com.kevinsa.security.service.service.task;
 
-import com.kevinsa.security.service.dao.dto.FlowOriginDTO;
+import com.kevinsa.security.service.dao.po.FlowOriginPO;
 import com.kevinsa.security.service.dao.mapper.FlowCollectionMapper;
 import com.kevinsa.security.service.enums.OriginFlowDataStatusEnums;
 import com.kevinsa.security.service.service.assertCheck.AssertExecutorFactory;
@@ -38,11 +38,11 @@ public class ExampleAssertTaskServer {
                     List<String> distinctPaths = flowCollectionMapper.getDistinctPathByBiz(bizMsg,
                             OriginFlowDataStatusEnums.ENABLE.getStatus(), host);
                     distinctPaths.forEach(path -> {
-                        FlowOriginDTO flowOriginDTO = flowCollectionMapper.getInfoByBizAndPath(bizMsg,
+                        FlowOriginPO flowOriginPO = flowCollectionMapper.getInfoByBizAndPath(bizMsg,
                                 host, path, OriginFlowDataStatusEnums.ENABLE.getStatus());
-                        if (flowOriginDTO != null) {
+                        if (flowOriginPO != null) {
                             context.setBizMsg(bizMsg);
-                            context.setFlowOriginDTO(flowOriginDTO);
+                            context.setFlowOriginPO(flowOriginPO);
                             try {
                                 processFlow.process(context);
                             } catch (Exception e) {
